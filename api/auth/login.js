@@ -2,7 +2,7 @@ import { collection, getData, readBody, send, checkPassword, hashPassword, issue
 export default async function handler(req,res) {
   if(req.method!=='POST') return send(res,405,{error:'Method not allowed.'});
   try {
-    const {admin,admin123}=await readBody(req);
+    const {username,password}=await readBody(req);
     if(!username || !password) return send(res,400,{error:'Username and password are required.'});
     const col=await collection(); const data=await getData(col);
     const user=(data.users||[]).find(u=>String(u.username||'').toLowerCase()===String(username).trim().toLowerCase() && u.active!==false);
