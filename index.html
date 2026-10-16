@@ -1,0 +1,1631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#17324d">
+<meta name="description" content="Local Customer Collection & Field Staff Management System">
+<title>Customer Collection System</title>
+<style>
+
+/* ===== MODERN UI REFRESH — existing features only ===== */
+:root{
+  --primary:#17324d;
+  --primary2:#2b6f9e;
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#172033;
+  --muted:#68758a;
+  --border:#e3e8ef;
+  --danger:#c0392b;
+  --success:#18864b;
+  --warning:#b7791f;
+  --shadow:0 8px 28px rgba(20,35,55,.07);
+  --shadow-hover:0 12px 34px rgba(20,35,55,.11);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at top right,rgba(43,111,158,.06),transparent 28%),
+    var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{min-height:100vh}
+
+.login{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  background:
+    radial-gradient(circle at 15% 15%,rgba(255,255,255,.14),transparent 25%),
+    linear-gradient(135deg,#122b43 0%,#17324d 48%,#2b6f9e 100%);
+}
+.login-card{
+  width:100%;
+  max-width:430px;
+  background:rgba(255,255,255,.98);
+  border:1px solid rgba(255,255,255,.7);
+  border-radius:22px;
+  padding:32px;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+.brand{text-align:center;margin-bottom:26px}
+.brand h1{margin:0 0 8px;font-size:25px;letter-spacing:-.4px}
+.brand p{margin:0;color:var(--muted);font-size:14px}
+
+label{display:block;font-weight:700;font-size:13px;margin:15px 0 7px;color:#344054}
+input,textarea,select{
+  width:100%;
+  padding:12px 13px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+input:hover,textarea:hover,select:hover{border-color:#cbd5e1}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--primary2);
+  box-shadow:0 0 0 4px rgba(43,111,158,.12);
+}
+textarea{min-height:120px;resize:vertical}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  padding:11px 16px;
+  font-weight:750;
+  letter-spacing:.05px;
+  transition:transform .16s,box-shadow .16s,opacity .16s,background .16s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 5px 14px rgba(20,35,55,.10)}
+.btn:active{transform:translateY(0);box-shadow:none}
+.btn-primary{background:var(--primary);color:#fff}
+.btn-primary:hover{background:#214866}
+.btn-secondary{background:#edf2f7;color:var(--primary)}
+.btn-danger{background:#fee2e2;color:#991b1b}
+.btn-edit{background:#edf2f7;color:#17324d}
+.btn-success{background:#e3f7eb;color:#126c3d}
+.btn-small{padding:7px 10px;font-size:12.5px}
+
+.topbar{
+  height:66px;
+  background:rgba(23,50,77,.97);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 20px;
+  position:sticky;
+  top:0;
+  z-index:20;
+  box-shadow:0 4px 18px rgba(13,30,48,.14);
+  backdrop-filter:blur(10px);
+}
+.topbar h2{font-size:18px;margin:0;letter-spacing:.1px}
+.userbox{display:flex;align-items:center;gap:10px;font-size:13px}
+.userbox>*{opacity:.96}
+
+.layout{display:flex;min-height:calc(100vh - 66px)}
+.sidebar{
+  width:238px;
+  background:rgba(255,255,255,.96);
+  border-right:1px solid var(--border);
+  padding:16px 13px;
+  flex-shrink:0;
+  box-shadow:3px 0 18px rgba(20,35,55,.025);
+}
+.nav button{
+  width:100%;
+  text-align:left;
+  border:1px solid transparent;
+  background:transparent;
+  padding:11px 12px;
+  border-radius:11px;
+  margin:3px 0;
+  color:#445064;
+  font-weight:700;
+  transition:background .16s,color .16s,border-color .16s,transform .16s;
+}
+.nav button:hover{
+  background:#f2f6fa;
+  color:var(--primary);
+  transform:translateX(1px);
+}
+.nav button.active{
+  background:#eaf2f8;
+  color:var(--primary);
+  border-color:#d7e5ef;
+  box-shadow:inset 3px 0 0 var(--primary2);
+}
+
+main{
+  flex:1;
+  padding:22px;
+  max-width:1540px;
+  margin:auto;
+  width:100%;
+  min-width:0;
+  overflow-x:hidden;
+}
+.page-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
+.page-title h2{
+  margin:0;
+  font-size:23px;
+  letter-spacing:-.35px;
+}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{
+  background:rgba(255,255,255,.98);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+.stat{
+  transition:transform .16s,box-shadow .16s;
+}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow-hover)}
+.stat .label{color:var(--muted);font-size:12.5px;font-weight:650}
+.stat .value{font-size:26px;font-weight:850;margin-top:7px;letter-spacing:-.5px}
+.dashboard-stats{align-items:stretch}
+.dashboard-stats .stat{min-height:102px;padding:15px}
+.dashboard-lower .card{min-width:0}
+.form-card{max-width:840px}
+.row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:18px}
+
+.table-wrap{
+  overflow:auto;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:15px;
+  box-shadow:var(--shadow);
+}
+.table{width:100%;border-collapse:separate;border-spacing:0;min-width:850px}
+.table th,.table td{
+  padding:12px 13px;
+  border-bottom:1px solid #edf0f4;
+  text-align:left;
+  font-size:13px;
+  vertical-align:top;
+}
+.table th{
+  background:#f7f9fc;
+  color:#445064;
+  font-weight:800;
+  position:sticky;
+  top:0;
+  z-index:2;
+}
+.table tbody tr:last-child td{border-bottom:0}
+.table tbody tr:hover td{background:#fbfcfe}
+.muted{color:var(--muted)}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:11.5px;
+  font-weight:800;
+  letter-spacing:.15px;
+}
+.badge-today{background:#fff3cd;color:#856404;border:1px solid #ffe69c}
+.badge-upcoming{background:#cfe2ff;color:#084298;border:1px solid #9ec5fe}
+.badge-complete{background:#d1e7dd;color:#0f5132;border:1px solid #a3cfbb}
+.badge-green{background:#e4f7ec;color:#126c3d}
+.badge-red{background:#fee2e2;color:#991b1b}
+
+.toolbar{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:15px;
+}
+.toolbar .wide{grid-column:span 2}
+.notice{
+  padding:12px 14px;
+  border-radius:11px;
+  margin:12px 0;
+  font-size:13.5px;
+  border:1px solid transparent;
+}
+.success{background:#e7f7ed;color:#126c3d;border-color:#c7ead5}
+.error{background:#feecec;color:#991b1b;border-color:#f4c7c7}
+.info{background:#eaf2f8;color:#174b6d;border-color:#d3e5f0}
+
+.reminder-list{display:flex;flex-direction:column;gap:9px}
+.reminder-item{
+  padding:12px 14px;
+  border-radius:11px;
+  background:#fff7e6;
+  border:1px solid #f0d49a;
+}
+.reminder-item.overdue{background:#feecec;border-color:#efb4b4}
+.reminder-item.today{background:#e7f7ed;border-color:#b9e3c8}
+.reminder-item .rhead{display:flex;justify-content:space-between;gap:10px;font-weight:800}
+.reminder-item .rmeta{font-size:12px;color:var(--muted);margin-top:4px}
+.empty{text-align:center;padding:38px;color:var(--muted)}
+.small{font-size:12px}
+.right{text-align:right}
+.desc{white-space:pre-wrap;max-width:420px;overflow-wrap:anywhere}
+
+/* Better scrollbars, without changing functionality */
+*{scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+*::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* Tablet */
+@media (max-width:1050px){
+  .sidebar{width:210px}
+  main{padding:18px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .toolbar{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* Mobile-friendly Reports */
+.report-table{min-width:900px;width:max-content;}
+.report-table th,.report-table td{overflow-wrap:anywhere;word-break:break-word;}
+.report-card h3{margin-bottom:12px;}
+@media (max-width:720px){
+  .report-card{min-width:0;width:100%;overflow:hidden;}
+  .report-card .actions{display:grid;grid-template-columns:1fr;gap:7px;}
+  .report-card .actions .btn{width:100%;}
+  /* Keep every report as ONE normal table, not separate entry cards. */
+  .report-card .table-wrap{overflow-x:auto;overflow-y:hidden;border:1px solid var(--border);box-shadow:none;background:#fff;-webkit-overflow-scrolling:touch;}
+  .report-table{display:table;table-layout:auto;min-width:900px;width:max-content;border-collapse:collapse;}
+  .report-table thead{display:table-header-group;}
+  .report-table tbody{display:table-row-group;}
+  .report-table tr{display:table-row;}
+  .report-table th,.report-table td{display:table-cell;white-space:nowrap;padding:8px 10px;font-size:12px;vertical-align:top;}
+  .report-table .desc{max-width:420px;white-space:pre-wrap;overflow-wrap:anywhere;}
+}
+
+/* Mobile */
+@media (max-width:720px){
+  .topbar{height:auto;min-height:60px;padding:10px 13px;gap:10px}
+  .topbar h2{font-size:16px}
+  .userbox{font-size:12px;gap:6px}
+  .layout{display:block;min-height:calc(100vh - 60px)}
+  .sidebar{
+    width:100%;
+    border-right:0;
+    border-bottom:1px solid var(--border);
+    padding:8px;
+    overflow-x:auto;
+    box-shadow:none;
+  }
+  .nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:1px}
+  .nav button{
+    width:auto;
+    min-width:max-content;
+    white-space:nowrap;
+    margin:0;
+    padding:9px 11px;
+    font-size:12px;
+  }
+  .nav button.active{box-shadow:inset 0 -3px 0 var(--primary2)}
+  main{padding:14px 12px}
+  .page-title{align-items:flex-start;flex-direction:column;margin-bottom:15px}
+  .page-title h2{font-size:20px}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .card{padding:14px;border-radius:14px}
+  .dashboard-stats .stat{min-height:88px;padding:12px}
+  .stat .value{font-size:22px}
+  .row,.row3{grid-template-columns:1fr;gap:8px}
+  .toolbar{grid-template-columns:1fr;gap:8px}
+  .toolbar .wide{grid-column:auto}
+  .actions{gap:7px}
+  .btn{padding:10px 13px}
+  .table-wrap{border-radius:12px}
+}
+
+/* Small phones */
+@media (max-width:430px){
+  .login{padding:14px}
+  .login-card{padding:23px 18px;border-radius:18px}
+  .brand h1{font-size:22px}
+  .grid{grid-template-columns:1fr 1fr}
+  .card{padding:12px}
+  .dashboard-stats .stat{min-height:82px}
+  .stat .label{font-size:11.5px}
+  .stat .value{font-size:20px}
+}
+
+
+/* Full-screen mobile reports */
+.report-fullscreen{position:fixed!important;inset:0!important;z-index:9999!important;margin:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;border-radius:0!important;overflow:auto!important;background:var(--bg,#f5f7fb)!important;padding:16px!important}
+.report-fullscreen .report-close{display:flex!important}
+.report-fullscreen .report-table{min-width:0!important;width:100%!important}
+.report-fullscreen .table-wrap{overflow:visible!important}
+.report-close{display:none;position:sticky;top:0;z-index:5;margin-left:auto;border:0;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+@media(max-width:720px){.report-card{width:100%;}.report-card.report-open{position:fixed!important;inset:0!important;z-index:9999!important;margin:0!important;width:100vw!important;height:100dvh!important;max-width:none!important;border-radius:0!important;overflow:auto!important;padding:14px!important}.report-card.report-open .report-close{display:flex!important}.report-card.report-open .table-wrap{overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch}.report-card.report-open .report-table{display:table!important;min-width:900px!important;width:max-content!important;table-layout:auto!important;border-collapse:collapse!important}.report-card.report-open .report-table thead{display:table-header-group!important}.report-card.report-open .report-table tbody{display:table-row-group!important}.report-card.report-open .report-table tr{display:table-row!important;margin:0!important;border:0!important;border-radius:0!important;padding:0!important;background:#fff!important}.report-card.report-open .report-table th,.report-card.report-open .report-table td{display:table-cell!important;border:1px solid var(--border)!important;padding:8px 10px!important;text-align:left!important;white-space:nowrap!important}.report-card.report-open .report-table td::before{display:none!important}.report-card.report-open .report-table .desc{white-space:pre-wrap!important;max-width:420px!important;overflow-wrap:anywhere!important}.report-card.report-open .actions{position:sticky;bottom:0;background:inherit;padding:8px 0;z-index:4}.report-card.report-open .actions button{width:100%;margin:4px 0}}
+
+.report-selector{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.report-select-card{cursor:pointer;text-align:center;padding:30px 24px;transition:.2s}
+.report-select-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.report-select-icon{font-size:42px;margin-bottom:10px}
+.report-select-card h3{margin:8px 0}
+.report-select-card p{color:#6b7280;min-height:42px}
+.report-select-card .btn{margin-top:12px;width:100%}
+.report-panel-head{display:flex;align-items:center;gap:15px;margin-bottom:20px}
+.report-panel-head h3{margin:0;flex:1}
+@media(max-width:700px){
+ .report-selector{grid-template-columns:1fr;gap:14px}
+ .report-select-card{padding:24px 18px}
+ .report-panel-head{align-items:flex-start;flex-direction:column}
+ .report-panel-head h3{order:-1}
+ .report-panel-head .btn{width:100%}
+}
+
+/* Reports: keep report results as real tables on every screen size. */
+@media(max-width:720px){
+  .report-panel .table-wrap{display:block;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;width:100%!important}
+  .report-panel .report-table{display:table!important;min-width:900px!important;width:max-content!important;table-layout:auto!important;border-collapse:collapse!important}
+  .report-panel .report-table thead{display:table-header-group!important}
+  .report-panel .report-table tbody{display:table-row-group!important}
+  .report-panel .report-table tr{display:table-row!important;margin:0!important;border:0!important;border-radius:0!important;padding:0!important;background:transparent!important}
+  .report-panel .report-table th,.report-panel .report-table td{display:table-cell!important;border:1px solid var(--border)!important;padding:8px 10px!important;text-align:left!important;vertical-align:top!important;white-space:nowrap!important}
+  .report-panel .report-table td::before{display:none!important}
+  .report-panel .report-table .desc{white-space:pre-wrap!important;min-width:260px!important;max-width:420px!important;overflow-wrap:anywhere!important}
+}
+
+/* Modern Customer Visit Edit popup */
+.cv-edit-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:18px;z-index:99999}
+.cv-edit-modal{width:min(560px,100%);max-height:90vh;overflow:auto;background:var(--card,#fff);color:var(--text,#111827);border:1px solid var(--border,#e5e7eb);border-radius:22px;box-shadow:0 24px 70px rgba(0,0,0,.28);padding:24px}
+.cv-edit-head{display:flex;align-items:center;gap:14px;margin-bottom:20px}.cv-edit-head-icon{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(59,130,246,.12);font-size:23px}.cv-edit-head h3{margin:0;font-size:20px}.cv-edit-head p{margin:4px 0 0;color:#6b7280;font-size:13px}.cv-edit-close{margin-left:auto;border:0;background:transparent;font-size:25px;cursor:pointer;color:#6b7280}
+.cv-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.cv-edit-field{border:1px solid var(--border,#e5e7eb);background:var(--bg,#f8fafc);border-radius:15px;padding:15px;cursor:pointer;text-align:left;transition:.18s}.cv-edit-field:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(0,0,0,.08);border-color:#60a5fa}.cv-edit-field .ico{font-size:20px}.cv-edit-field strong{display:block;margin-top:7px;font-size:14px}.cv-edit-field span{display:block;margin-top:3px;color:#6b7280;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cv-input-wrap{margin-top:4px}.cv-input-wrap label{display:block;font-weight:600;font-size:13px;margin-bottom:7px}.cv-input-wrap input,.cv-input-wrap textarea{width:100%;box-sizing:border-box;border:1px solid var(--border,#d1d5db);border-radius:12px;padding:11px 12px;background:var(--bg,#fff);color:inherit;font:inherit;outline:none}.cv-input-wrap textarea{min-height:100px;resize:vertical}.cv-input-wrap input:focus,.cv-input-wrap textarea:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.12)}.cv-edit-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}.cv-edit-actions button{border:0;border-radius:11px;padding:10px 17px;cursor:pointer;font-weight:600}.cv-btn-cancel{background:#e5e7eb;color:#374151}.cv-btn-save{background:#2563eb;color:#fff}.cv-back{background:transparent!important;color:#2563eb!important;margin-right:auto}
+@media(max-width:560px){.cv-edit-modal{padding:18px;border-radius:18px}.cv-edit-grid{grid-template-columns:1fr}.cv-edit-actions{flex-wrap:wrap}.cv-edit-actions button{flex:1}.cv-back{flex:0 0 100%!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<style id="pagination-fix">
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 4px 2px;flex-wrap:wrap}
+.pagination-info{font-size:13px;color:var(--muted)}
+.pagination-controls{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.pagination-controls button:disabled{opacity:.45;cursor:not-allowed}
+.pagination-pages{font-size:13px;font-weight:600;padding:0 4px}
+.page-size{border:1px solid #d9dee5;border-radius:7px;padding:7px 9px;background:#fff;font-size:13px;color:inherit}
+@media(max-width:600px){
+  .pagination{align-items:flex-start}
+  .pagination-controls{width:100%}
+  .pagination-info{width:100%}
+  .page-size{margin-left:auto}
+}
+</style>
+
+
+<style id="reports-selection-horizontal-fix">
+.report-selector{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;width:100%}
+.report-select-card{min-width:0;cursor:pointer}
+.report-scroll{width:100%;max-width:100%;overflow-x:auto!important;overflow-y:hidden!important;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+.report-panel .report-table{min-width:900px!important;width:max-content!important}
+.report-panel .report-table th,.report-panel .report-table td{white-space:nowrap!important}
+.report-panel .report-table .desc{white-space:pre-wrap!important;min-width:220px;max-width:420px}
+@media(max-width:700px){
+  .report-selector{grid-template-columns:1fr;gap:14px}
+  .report-select-card{width:100%;padding:24px 18px}
+  .report-scroll{display:block!important;overflow-x:auto!important;overflow-y:hidden!important;width:100%!important}
+  .report-panel .report-table{display:table!important;min-width:900px!important;width:max-content!important;table-layout:auto!important}
+  .report-panel .report-table thead{display:table-header-group!important}
+  .report-panel .report-table tbody{display:table-row-group!important}
+  .report-panel .report-table tr{display:table-row!important;margin:0!important;border:0!important;padding:0!important;border-radius:0!important}
+  .report-panel .report-table th,.report-panel .report-table td{display:table-cell!important;white-space:nowrap!important}
+}
+</style>
+</head>
+<body>
+<div id="loginView" class="login">
+  <div class="login-card">
+    <div class="brand"><h1>Customer Collection System</h1><p>Online Field Staff Management</p></div>
+    <div id="loginMsg"></div>
+    <label>Username</label><input id="loginUser" autocomplete="username" placeholder="Enter username">
+    <label>Password</label><input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password">
+    <div class="actions"><button class="btn btn-primary" style="width:100%" onclick="login()">Login</button></div>
+  </div>
+</div>
+
+<div id="appView" class="app hidden">
+  <header class="topbar"><h2>Customer Collection System</h2><div class="userbox"><span id="dbStatus" class="small">Online Database</span> <span id="userLabel"></span><button class="btn btn-secondary btn-small" onclick="logout()">Logout</button></div></header>
+  <div class="layout">
+    <aside class="sidebar"><nav class="nav" id="nav"></nav></aside>
+    <main id="content"></main>
+  </div>
+</div>
+
+<script>
+let db={users:[],departures:[],visits:[],audit:[],deletedRecords:[]};
+let current=null, page='dashboard';
+
+/* Online persistence: all reads/writes go through the authenticated Vercel API. */
+async function apiRequest(url, options={}) {
+  const response = await fetch(url, {credentials:'same-origin', headers:{'Content-Type':'application/json', ...(options.headers||{})}, ...options});
+  let result={}; try { result=await response.json(); } catch(_) {}
+  if(!response.ok) throw new Error(result.error || `Request failed (${response.status})`);
+  return result;
+}
+async function load(){
+  const result=await apiRequest('/api/data',{method:'GET'});
+  db=result.data || {users:[],departures:[],visits:[],audit:[],deletedRecords:[]};
+  normalizeDatabase();
+}
+function normalizeDatabase(){
+  if(!Array.isArray(db.users))db.users=[];
+  if(!Array.isArray(db.departures))db.departures=[];
+  if(!Array.isArray(db.visits))db.visits=[];
+  if(!Array.isArray(db.audit))db.audit=[];
+  if(!Array.isArray(db.deletedRecords))db.deletedRecords=[];
+  db.users.forEach(x=>{if(x.role==='Staff' && typeof x.passwordEnabled!=='boolean')x.passwordEnabled=true;});
+  db.departures.forEach(x=>{if(typeof x.isDeleted!=='boolean')x.isDeleted=false});
+  db.visits.forEach(x=>{if(typeof x.isDeleted!=='boolean')x.isDeleted=false});
+}
+async function save(){
+  try {
+    await apiRequest('/api/data',{method:'PUT',body:JSON.stringify({data:db})});
+    const status=document.getElementById('dbStatus'); if(status)status.textContent='Online database connected';
+  } catch(e) {
+    console.error(e); const status=document.getElementById('dbStatus'); if(status)status.textContent='Online save failed';
+    alert('Database save failed: '+e.message+'\nPlease check your internet connection and try again.');
+    throw e;
+  }
+}
+async function startSystem(){
+  const status=document.getElementById('dbStatus'); if(status)status.textContent='Connecting to online database…';
+  try {
+    const result=await apiRequest('/api/auth/session',{method:'GET'});
+    current=result.user; await load(); showApp();
+    if(status)status.textContent='Online database connected';
+  } catch(e) {
+    current=null;
+    if(status)status.textContent='Online login required';
+    const msgBox=document.getElementById('loginMsg');
+    if(msgBox)msgBox.innerHTML=msg('Sign in to connect to the online database.','info');
+  }
+}
+async function verifyCurrentPassword(password){
+  const r=await apiRequest('/api/auth/verify-password',{method:'POST',body:JSON.stringify({password})});
+  return !!r.valid;
+}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function now(){return new Date().toISOString()}
+function today(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmtDate(v){if(!v)return '';let d=new Date(v+'T00:00:00');return d.toLocaleDateString('en-GB')}
+function recordDateTime(x){return `${x?.date||''}T${x?.time||'00:00'}`}
+function sortVisitsDateTime(a,b){return recordDateTime(b).localeCompare(recordDateTime(a))}
+function msg(text,type='success'){return `<div class="notice ${type}">${esc(text)}</div>`}
+function log(action,type,id=''){db.audit.push({id:uid(),user:current?.username||'',action,type,recordId:id,timestamp:now()});save()}
+function roleAdmin(){return current?.role==='Admin'}
+
+async function login(){
+ const u=document.getElementById('loginUser').value.trim(),p=document.getElementById('loginPass').value;
+ const box=document.getElementById('loginMsg');
+ try {
+   box.innerHTML=msg('Connecting…','info');
+   const result=await apiRequest('/api/auth/login',{method:'POST',body:JSON.stringify({username:u,password:p})});
+   current=result.user; await load(); document.getElementById('loginPass').value=''; showApp();
+   const status=document.getElementById('dbStatus'); if(status)status.textContent='Online database connected';
+ } catch(e) { box.innerHTML=msg(e.message||'Invalid username or password.','error'); }
+}
+function restore(){current=null;}
+async function logout(){
+ try{await apiRequest('/api/auth/logout',{method:'POST',body:'{}'});}catch(_){}
+ current=null; db={users:[],departures:[],visits:[],audit:[],deletedRecords:[]};
+ document.getElementById('loginView').classList.remove('hidden');document.getElementById('appView').classList.add('hidden');
+}
+function showApp(){
+ document.getElementById('loginView').classList.add('hidden');document.getElementById('appView').classList.remove('hidden');
+ document.getElementById('userLabel').textContent=current.name+' ('+current.role+')';renderNav();go('dashboard');
+}
+function renderNav(){
+ let items=roleAdmin()?[['dashboard','Dashboard'],['calculator','Calculator'],['dueReminders','Due Date Reminders'],['departure','Daily Departures'],['visit','Customer Records'],['staff','Staff Management'],['adminAccount','Admin Account'],['backup','Backup & Restore'],['reports','Reports'],['recycleBin','Recycle Bin'],['audit','Audit Log']]:[['dashboard','Dashboard'],['calculator','Calculator'],['dueReminders','Due Date Reminders'],['departureNew','Daily Departure'],['visitNew','Customer Visit'],['myRecords','My Records'],['staffBackup','Backup & Restore']];
+ document.getElementById('nav').innerHTML=items.map(([p,t])=>`<button class="${page===p?'active':''}" onclick="go('${p}')">${t}</button>`).join('');
+}
+function go(p){
+  if(!roleAdmin() && ['staff','adminAccount','backup','reports','recycleBin','audit','departure','visit'].includes(p)){ p=(p==='departure'||p==='visit')?'myRecords':'myRecords'; }
+  page=p;renderNav();const c=document.getElementById('content');({dashboard:dashboard,calculator:calculator,dueReminders:dueReminders,departure:departures,departureNew:departureForm,visit:visits,visitNew:visitForm,staff:staff,adminAccount:adminAccount,backup:backupRestoreFinal,reports:reports,recycleBin:recycleBin,audit:audit,myRecords:myRecords,staffBackup:staffBackup}[p]||dashboard)(c)
+}
+
+function calculator(c){
+  c.innerHTML=`<div class="page-title"><h2>Calculator</h2><span class="muted">Installment & Interest Calculator</span></div>
+  <div class="card form-card" style="max-width:760px">
+    <div class="row">
+      <div><label>Total Amount</label><input id="calcAmount" type="number" min="0" step="0.01" placeholder="Enter amount" oninput="calculateInstallment()"></div>
+      <div><label>Down Payment</label><input id="calcDown" type="number" min="0" step="0.01" value="0" oninput="calculateInstallment()"></div>
+      <div><label>Interest Rate (% per month)</label><input id="calcRate" type="number" min="0" step="0.01" placeholder="Enter monthly interest %" oninput="calculateInstallment()"></div>
+      <div><label>Number of Months</label><input id="calcMonths" type="number" min="1" step="1" placeholder="Enter months" oninput="calculateInstallment()"></div>
+    </div>
+    <div id="calcResult" style="margin-top:20px"></div>
+  </div>`;
+}
+function calculateInstallment(){
+  const amount=Number(document.getElementById('calcAmount')?.value||0);
+  const down=Number(document.getElementById('calcDown')?.value||0);
+  const rate=Number(document.getElementById('calcRate')?.value||0);
+  const months=Number(document.getElementById('calcMonths')?.value||0);
+  const out=document.getElementById('calcResult');
+  if(!out)return;
+  if(amount<=0 || down<0 || down>amount || rate<0 || months<=0){out.innerHTML='';return;}
+  const balance=amount-down;
+  const totalRate=rate*months;
+  const interest=balance*(totalRate/100);
+  const total=balance+interest;
+  const installment=total/months;
+  out.innerHTML=`<div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+    <div class="card stat"><div class="label">Amount After Down Payment</div><div class="value">${balance.toFixed(2)}</div></div>
+    <div class="card stat"><div class="label">Total Interest Rate</div><div class="value">${totalRate.toFixed(2)}%</div></div>
+    <div class="card stat"><div class="label">Interest Amount</div><div class="value">${interest.toFixed(2)}</div></div>
+    <div class="card stat"><div class="label">Total With Interest</div><div class="value">${total.toFixed(2)}</div></div>
+    <div class="card stat"><div class="label">Monthly Installment</div><div class="value">${installment.toFixed(2)}</div></div>
+  </div>`;
+}
+
+async function toggleMyStaffPasswordPreference(checked){
+  if(!current || current.role!=='Staff') return;
+  const enabled=true;
+  if(checked!==true){alert('Online accounts must require a password for secure access.');const toggle=document.getElementById('myStaffPasswordToggle');if(toggle)toggle.checked=true;return;}
+  const stored=db.users.find(u=>u.id===current.id && u.role==='Staff');
+  if(!stored) return;
+  stored.passwordEnabled=enabled;
+  current=stored;
+  log(enabled?'Enable Staff Password Login':'Disable Staff Password Login','Staff',current.id);
+  await save();
+  // Stay on Backup & Restore after changing the setting.
+  if(typeof staffBackup==='function') staffBackup(document.getElementById('content'));
+  else if(typeof backupRestore==='function') backupRestore(document.getElementById('content'));
+}
+
+function dashboard(c){
+  const own=x=>roleAdmin()||x.staffId===current.id;
+  const ds=db.departures.filter(x=>own(x)&&x.date===today()),vs=db.visits.filter(x=>own(x)&&x.date===today());
+  const todayKey=today();
+  const scopedVisits=db.visits.filter(x=>own(x));
+  const scopedLatest={};
+  scopedVisits.forEach(x=>{
+    const key=String(x.account||'').trim().toLowerCase();
+    if(!key)return;
+    if(!scopedLatest[key] || String(x.createdAt||'').localeCompare(String(scopedLatest[key].createdAt||''))>0) scopedLatest[key]=x;
+  });
+  const reminders=Object.values(scopedLatest).filter(x=>x.dueDate).sort((a,b)=>a.dueDate.localeCompare(b.dueDate)||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  const overdue=reminders.filter(x=>x.dueStatus!=='COMPLETE' && x.dueDate<todayKey);
+  const latest3=reminders.slice().sort((a,b)=>a.dueDate.localeCompare(b.dueDate)).slice(0,3);
+  c.innerHTML=`<div class="page-title"><h2>Dashboard</h2><span class="muted">${fmtDate(today())}</span></div>
+  <div class="grid dashboard-stats">
+  <div class="card stat"><div class="label">Today's Departures</div><div class="value">${ds.length}</div></div>
+  <div class="card stat"><div class="label">Today's Customer Visits</div><div class="value">${vs.length}</div></div>
+  <div class="card stat"><div class="label">Active Staff</div><div class="value">${db.users.filter(x=>x.role==='Staff'&&x.active).length}</div></div>
+  <div class="card stat"><div class="label">Total Customer Records</div><div class="value">${db.visits.length}</div></div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <div class="page-title" style="margin-bottom:10px"><h3 style="margin:0">Customer Visit Due Date Reminders</h3><div class="actions" style="margin:0"><span class="badge ${overdue.length?'badge-red':'badge-green'}">${overdue.length?'Overdue: '+overdue.length:'No overdue visits'}</span><button class="btn btn-secondary btn-small" onclick="go('dueReminders')">View All</button></div></div>
+    ${latest3.length?`<div class="reminder-list">${latest3.map(x=>{const cls=x.dueStatus==='COMPLETE'?'':(x.dueDate<todayKey?'overdue':(x.dueDate===todayKey?'today':''));const label=x.dueStatus==='COMPLETE'?'COMPLETE':(x.dueDate<todayKey?'OVERDUE':(x.dueDate===todayKey?'TODAY':'UPCOMING'));return `<div class="reminder-item ${cls}"><div class="rhead"><span>${esc(x.account)} — ${esc(label)}</span><span>${fmtDate(x.dueDate)}</span></div><div class="rmeta">Staff: ${esc(x.staffName)}${x.phone?' • Phone: '+esc(x.phone):''} • Visit: ${fmtDate(x.date)} ${esc(x.time||'')}</div></div>`;}).join('')}</div>`:'<div class="empty">No Customer Visit Due Dates have been entered yet.</div>'}
+  </div>
+  <div class="row dashboard-lower" style="margin-top:12px">
+  <div class="card"><h3>Today's Departures</h3>${ds.length?`<div class="table-wrap"><table class="table"><tr><th>Staff</th><th>Route</th><th>Time</th><th>Vehicle</th></tr>${ds.map(x=>`<tr><td>${esc(x.staffName)}</td><td>${esc(x.route)}</td><td>${esc(x.departureTime)}</td><td>${esc(x.vehicle)}</td></tr>`).join('')}</table></div>`:'<div class="empty">No departure records today.</div>'}</div>
+  <div class="card"><h3>Recent Customer Records</h3>${vs.length?`<div class="table-wrap"><table class="table"><tr><th>Time</th><th>Account</th><th>Staff</th><th>Description</th></tr>${vs.slice().sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,8).map(x=>`<tr><td>${esc(x.time)}</td><td>${esc(x.account)}</td><td>${esc(x.staffName)}</td><td></td><td class="desc">${esc(x.description)}</td></tr>`).join('')}</table></div>`:'<div class="empty">No customer records today.</div>'}</div>
+  </div>`;
+}
+
+function getDueReminders(){
+  const groups={};
+  db.visits.forEach(x=>{
+    const key=String(x.account||'').trim().toLowerCase();
+    if(!key)return;
+    if(!groups[key] || String(x.createdAt||'').localeCompare(String(groups[key].createdAt||''))>0){
+      groups[key]=x;
+    }
+  });
+  // Only the latest Customer Record for an Account Number can have an active Due Date Reminder.
+  // If a new Customer Record is added without a Due Date, the previous reminder is automatically COMPLETE.
+  return Object.values(groups)
+    .filter(x=>x.dueDate)
+    .sort((a,b)=>a.dueDate.localeCompare(b.dueDate)||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+}
+
+
+/* ===== Pagination: long tables show only 10/20 rows at a time ===== */
+const pageState={};
+function paginate(key,items,renderRows,containerId,emptyText='No records found.'){
+  const sizeKey=key+'Size', pageKey=key+'Page';
+  const size=Number(pageState[sizeKey]||10);
+  const total=Math.max(1,Math.ceil(items.length/size));
+  let page=Math.min(Math.max(1,Number(pageState[pageKey]||1)),total);
+  pageState[pageKey]=page;
+  const start=(page-1)*size;
+  const rows=items.slice(start,start+size);
+  const controls=items.length?`<div class="pagination">
+    <div class="pagination-info">Showing ${start+1}-${Math.min(start+size,items.length)} of ${items.length}</div>
+    <div class="pagination-controls">
+      <button class="btn btn-secondary btn-small" onclick="changePage('${key}',${page-1})" ${page<=1?'disabled':''}>‹ Prev</button>
+      <span class="pagination-pages">Page ${page} of ${total}</span>
+      <button class="btn btn-secondary btn-small" onclick="changePage('${key}',${page+1})" ${page>=total?'disabled':''}>Next ›</button>
+      <select class="page-size" onchange="changePageSize('${key}',this.value)">
+        <option value="10" ${size===10?'selected':''}>10 / page</option>
+        <option value="20" ${size===20?'selected':''}>20 / page</option>
+      </select>
+    </div>
+  </div>`:'';
+  const el=document.getElementById(containerId);
+  if(el) el.innerHTML=items.length?renderRows(rows)+controls:`<div class="empty">${emptyText}</div>`;
+}
+function changePage(key,page){
+  pageState[key+'Page']=page;
+  if(typeof window['render_'+key]==='function') window['render_'+key]();
+}
+function changePageSize(key,size){
+  pageState[key+'Size']=Number(size);
+  pageState[key+'Page']=1;
+  if(typeof window['render_'+key]==='function') window['render_'+key]();
+}
+function resetPage(key){pageState[key+'Page']=1;}
+
+function dueReminders(c){
+  syncDueDateStatuses();
+  const own=x=>roleAdmin()||x.staffId===current.id;
+  const allVisits=db.visits.filter(x=>own(x));
+  const latestByAccount={};
+  allVisits.forEach(x=>{
+    const key=String(x.account||'').trim().toLowerCase();
+    if(!key)return;
+    if(!latestByAccount[key] || String(x.createdAt||'').localeCompare(String(latestByAccount[key].createdAt||''))>0){
+      latestByAccount[key]=x;
+    }
+  });
+  // Show the latest record that has a Due Date for each account.
+  // This prevents an account from disappearing when a newer visit has no Due Date.
+  const latestDueByAccount={};
+  allVisits.filter(x=>x.dueDate).forEach(x=>{
+    const key=String(x.account||'').trim().toLowerCase();
+    if(!key)return;
+    if(!latestDueByAccount[key] || String(x.createdAt||'').localeCompare(String(latestDueByAccount[key].createdAt||''))>0){
+      latestDueByAccount[key]=x;
+    }
+  });
+  const active=Object.values(latestDueByAccount).filter(x=>x.dueStatus!=='COMPLETE')
+    .map(x=>({...x,status:x.dueDate<today()?'OVERDUE':(x.dueDate===today()?'TODAY':'UPCOMING')}));
+  const completed=allVisits.filter(x=>x.dueDate && x.dueStatus==='COMPLETE')
+    .map(x=>({...x,status:'COMPLETE'}));
+  const rows=[...active,...completed].sort((a,b)=>a.dueDate.localeCompare(b.dueDate)||String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+  c.innerHTML=`<div class="page-title"><h2>Customer Visit Due Date Reminders</h2><button class="btn btn-secondary" onclick="go('dashboard')">Back to Dashboard</button></div>
+  <div class="card"><div class="toolbar"><input id="drAccount" class="wide" placeholder="Search Account Number"><select id="drStatus"><option value="">All Status</option><option value="OVERDUE">OVERDUE</option><option value="COMPLETE">COMPLETE</option><option value="UPCOMING">UPCOMING</option></select><button class="btn btn-secondary" onclick="filterDueReminders()">Search</button><button class="btn btn-secondary" onclick="dueReminders(document.getElementById('content'))">Clear</button></div><div id="dueReminderTable"></div></div>`;
+  window.filterDueReminders=()=>{const q=drAccount.value.trim().toLowerCase(),status=drStatus.value;resetPage('due');renderDueReminderTable(rows.filter(x=>(!q||String(x.account||'').toLowerCase().includes(q))&&(!status||x.status===status)));};
+  renderDueReminderTable(rows);
+}
+
+function renderDueReminderTable(rows){
+  window.render_due=()=>paginate('due',rows,r=>`<div class="table-wrap"><table class="table"><tr><th>Due Date</th><th>Account Number</th><th>Status</th><th>Visit Date</th><th>Time</th><th>Staff</th><th>Phone</th><th>Description</th><th>Action</th></tr>${r.map(x=>`<tr><td>${fmtDate(x.dueDate)}</td><td><b>${esc(x.account)}</b></td><td><span class="badge ${x.status==='COMPLETE'?'badge-complete':(x.status==='TODAY'?'badge-today':(x.status==='UPCOMING'?'badge-upcoming':'badge-red'))}">${x.status}</span></td><td>${fmtDate(x.date)}</td><td>${esc(x.time)}</td><td>${esc(x.staffName)}</td><td>${esc(x.phone)}</td><td class="desc">${esc(x.description)}</td><td>${x.status!=='COMPLETE'?`<button class="btn btn-primary btn-small" onclick="completeDueReminder('${x.id}')">COMPLETE</button>`:'<span class="muted">Completed</span>'}</td></tr>`).join('')}</table></div>`,'dueReminderTable','No Customer Visit Due Date reminders found.');
+  render_due();
+}
+
+async function completeDueReminder(id){
+  const x=db.visits.find(v=>v.id===id);
+  if(!x || !x.dueDate || (!roleAdmin() && x.staffId!==current.id)){alert('You can only manage your own records.');return;}
+  if(!confirm('Mark this Due Date as COMPLETE?'))return;
+  x.dueStatus='COMPLETE';
+  x.completedAt=now();
+  x.updatedAt=now();
+  await save();
+  log('Complete','Customer Visit',id);
+  dueReminders(document.getElementById('content'));
+}
+
+function departureForm(c){
+ c.innerHTML=`<div class="page-title"><h2>Daily Departure Record</h2></div>
+ <div class="card form-card"><div id="formMsg"></div>
+ <div class="row"><div><label>Date *</label><input id="dDate" type="date" value="${today()}"></div><div><label>Departure Time *</label><input id="dTime" type="time" value="${new Date().toTimeString().slice(0,5)}"></div></div>
+ <label>Route *</label><input id="dRoute" placeholder="Enter route">
+ <div class="row"><div><label>Vehicle Number *</label><input id="dVehicle" placeholder="Example: WP ABC-1234"></div><div><label>Odometer Reading *</label><input id="dOdo" type="number" min="0" step="0.1" placeholder="Enter reading"></div></div>
+ <label>Starting Location</label><input id="dStart" placeholder="Starting location">
+ <label>Purpose / Notes</label><textarea id="dNotes" placeholder="Additional notes"></textarea>
+ <div class="actions"><button class="btn btn-primary" onclick="saveDeparture()">Save Departure Record</button><button class="btn btn-secondary" onclick="go('dashboard')">Cancel</button></div></div>`;
+}
+async function saveDeparture(){
+ const date=dDate.value,route=dRoute.value.trim(),time=dTime.value,vehicle=dVehicle.value.trim(),odo=dOdo.value;
+ if(!date||!route||!time||!vehicle||odo===''){formMsg.innerHTML=msg('Please complete all required fields.','error');return}
+ const x={id:uid(),staffId:current.id,staffName:current.name,date,route,departureTime:time,vehicle,odometer:Number(odo),startingLocation:dStart.value.trim(),notes:dNotes.value.trim(),createdAt:now(),updatedAt:now()};
+ db.departures.push(x);await save();log('Create','Daily Departure',x.id);formMsg.innerHTML=msg('Departure record saved successfully.');setTimeout(()=>go(roleAdmin()?'departure':'myRecords'),600);
+}
+
+function visitForm(c){
+ c.innerHTML=`<div class="page-title"><h2>Customer Visit Record</h2></div>
+ <div class="card form-card"><div id="formMsg"></div>
+ <div class="row"><div><label>Date *</label><input id="vDate" type="date" value="${today()}"></div><div><label>Time *</label><input id="vTime" type="time" value="${new Date().toTimeString().slice(0,5)}"></div></div>
+ <label>Account Number *<input id="vAccount" placeholder="Example: ACC-10025">
+ <label>Visit Outcome</label>
+<select id="vOutcome" onchange="toggleOtherVisitDescription(); syncVisitDescription()">
+<option value="">Select outcome (optional)</option>
+<option value="Collected">Collected</option>
+<option value="Promised to Pay">Promised to Pay</option>
+<option value="Customer Not Available">Customer Not Available</option>
+<option value="Dispute / Dispute Note">Dispute / Dispute Note</option>
+<option value="Other">Other</option>
+</select>
+<div id="vOtherWrap" style="display:none;margin-top:8px">
+<textarea id="vOtherDescription" placeholder="Enter your own description" oninput="syncVisitDescription()"></textarea>
+</div>
+ <label>Amount Collected / Given</label><input id="vAmount" type="number" min="0" step="0.01" placeholder="Enter amount (Rs.)" oninput="syncVisitDescription()">
+ <label>Customer Visit Due Date</label><input id="vDueDate" type="date" title="Reminder date for the next customer visit">
+ <label>Phone Number</label><input id="vPhone" type="tel" placeholder="Customer phone number">
+ <label>Description</label><textarea id="vDesc" placeholder="Additional visit details (optional)" readonly></textarea>
+ <div class="actions"><button class="btn btn-primary" onclick="saveVisit()">Save Customer Record</button><button class="btn btn-secondary" onclick="go('dashboard')">Cancel</button></div></div>`;
+}
+function syncVisitDescription(){
+ const select=document.getElementById('vOutcome');
+ const desc=document.getElementById('vDesc');
+ const custom=document.getElementById('vOtherDescription');
+ if(!select||!desc)return;
+ const amount=document.getElementById('vAmount');
+ const amountText=amount && amount.value.trim() ? 'Rs. '+Number(amount.value).toLocaleString('en-LK',{minimumFractionDigits:2,maximumFractionDigits:2}) : '';
+ const outcomeText=select.value==='Other' ? (custom?custom.value.trim():'') : select.value;
+ desc.value=[outcomeText,amountText].filter(Boolean).join(' | ');
+}
+function toggleOtherVisitDescription(){
+ const select=document.getElementById('vOutcome');
+ const wrap=document.getElementById('vOtherWrap');
+ const custom=document.getElementById('vOtherDescription');
+ const isOther=select && select.value==='Other';
+ if(wrap) wrap.style.display=isOther?'block':'none';
+ if(!isOther && custom) custom.value='';
+ syncVisitDescription();
+}
+async function completePreviousDueDate(account,excludeId=''){
+ const key=String(account||'').trim().toLowerCase();
+ if(!key)return;
+ const previous=db.visits.filter(v=>String(v.account||'').trim().toLowerCase()===key && v.dueDate && v.id!==excludeId && v.dueStatus!=='COMPLETE')
+   .sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')))[0];
+ if(previous){
+   previous.dueStatus='COMPLETE';
+   previous.completedAt=now();
+   previous.updatedAt=now();
+ }
+}
+function syncDueDateStatuses(){
+ const accounts={};
+ [...db.visits].sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).forEach(v=>{
+   const key=String(v.account||'').trim().toLowerCase();
+   if(!key)return;
+   if(v.dueDate){
+     accounts[key]=v;
+   }else if(accounts[key] && accounts[key].dueStatus!=='COMPLETE'){
+     accounts[key].dueStatus='COMPLETE';
+     accounts[key].completedAt=now();
+     accounts[key].updatedAt=now();
+   }
+ });
+}
+
+async function saveVisit(){
+ const date=vDate.value,time=vTime.value,account=vAccount.value.trim(),dueDate=vDueDate.value;
+ const amount=Number(document.getElementById('vAmount')?.value||0);
+ const outcome=vOutcome.value;
+ const custom=document.getElementById('vOtherDescription');
+ const desc=outcome==='Other' ? (custom?custom.value.trim():'') : outcome;
+ if(!date||!time||!account){formMsg.innerHTML=msg('Date, Time and Account Number are required.','error');return}
+ if(dueDate && dueDate<date){formMsg.innerHTML=msg('Customer Visit Due Date cannot be before the visit date.','error');return}
+ const x={id:uid(),staffId:current.id,staffName:current.name,date,time,dueDate,account,phone:vPhone.value.trim(),amount,description:desc,status:outcome,createdAt:now(),updatedAt:now()};
+ db.visits.push(x);
+ if(!dueDate) await completePreviousDueDate(account);
+ syncDueDateStatuses();
+ await save();log('Create','Customer Visit',x.id);formMsg.innerHTML=msg('Customer record saved successfully.');setTimeout(()=>go(roleAdmin()?'visit':'myRecords'),600);
+}
+
+function departures(c){
+ if(!roleAdmin()){ go('myRecords'); return; }
+ let arr=db.departures.filter(x=>!x.isDeleted).sort((a,b)=>(b.date+b.departureTime).localeCompare(a.date+a.departureTime));
+ c.innerHTML=`<div class="page-title"><h2>Daily Departure Records</h2><div class="actions" style="margin:0"><button class="btn btn-primary" onclick="go('departureNew')">+ Add Departure</button><button class="btn btn-secondary" onclick="exportCSV('departures')">Export CSV</button></div></div>
+ <div class="card"><div class="toolbar"><input id="dfDate" type="date" placeholder="Date"><input id="dfStaff" placeholder="Staff"><input id="dfRoute" placeholder="Route"><button class="btn btn-secondary" onclick="filterDepartures()">Search</button></div><div id="depTable"></div></div>`;
+ window.filterDepartures=()=>{let d=dfDate.value,s=dfStaff.value.toLowerCase(),r=dfRoute.value.toLowerCase();let a=arr.filter(x=>(!d||x.date===d)&&(!s||x.staffName.toLowerCase().includes(s))&&(!r||x.route.toLowerCase().includes(r)));renderDepTable(a)};
+ renderDepTable(arr);
+}
+function renderDepTable(a){
+  window.render_departures=()=>paginate('departures',a,r=>`<div class="table-wrap"><table class="table"><tr><th>Date</th><th>Staff</th><th>Route</th><th>Departure</th><th>Vehicle</th><th>Odometer</th><th>Start</th><th>Notes</th><th>Action</th></tr>${r.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.staffName)}</td><td>${esc(x.route)}</td><td>${esc(x.departureTime)}</td><td>${esc(x.vehicle)}</td><td>${x.odometer}</td><td>${esc(x.startingLocation)}</td><td class="desc">${esc(x.notes)}</td><td><button class="btn btn-edit btn-small" onclick="editDeparture('${x.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteDeparture('${x.id}')">Delete</button></td></tr>`).join('')}</table></div>`,'depTable','No departure records.');
+  render_departures();
+}
+async function editDeparture(id){
+  const x=db.departures.find(v=>v.id===id);
+  if(!x || (!roleAdmin() && x.staffId!==current.id)){alert('You can only manage your own records.');return;}
+  if(!x || x.isDeleted)return;
+
+  const fields=[
+    ['date','📅','Date',x.date||''],
+    ['departureTime','🕐','Departure Time',x.departureTime||''],
+    ['route','🛣️','Route',x.route||''],
+    ['vehicle','🚗','Vehicle Number',x.vehicle||''],
+    ['odometer','🔢','Odometer Reading',x.odometer??''],
+    ['startingLocation','📍','Starting Location',x.startingLocation||''],
+    ['notes','📝','Purpose / Notes',x.notes||'']
+  ];
+
+  const overlay=document.createElement('div');
+  overlay.className='cv-edit-overlay';
+  overlay.innerHTML=`
+    <div class="cv-edit-modal" role="dialog" aria-modal="true">
+      <div class="cv-edit-head">
+        <div class="cv-edit-head-icon">🚗</div>
+        <div><h3>Edit Departure Record</h3><p>Select only the field you want to change</p></div>
+        <button class="cv-edit-close" type="button">×</button>
+      </div>
+      <div class="cv-edit-grid">
+        ${fields.map(f=>`<button type="button" class="cv-edit-field" data-field="${f[0]}"><div class="ico">${f[1]}</div><strong>${f[2]}</strong><span>${String(f[3]).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')||'Not set'}</span></button>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const close=()=>overlay.remove();
+  overlay.querySelector('.cv-edit-close').onclick=close;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+
+  overlay.querySelectorAll('.cv-edit-field').forEach(btn=>btn.onclick=()=>{
+    const field=btn.dataset.field;
+    const meta=fields.find(f=>f[0]===field);
+    const modal=overlay.querySelector('.cv-edit-modal');
+    const inputType=field==='date'?'date':field==='departureTime'?'time':field==='odometer'?'number':'text';
+    const isTextArea=field==='notes';
+    const currentValue=x[field]??'';
+    modal.innerHTML=`
+      <div class="cv-edit-head">
+        <div class="cv-edit-head-icon">${meta[1]}</div>
+        <div><h3>Edit ${meta[2]}</h3><p>Only this field will be updated</p></div>
+        <button class="cv-edit-close" type="button">×</button>
+      </div>
+      <div class="cv-input-wrap">
+        <label>${meta[2]}</label>
+        ${isTextArea?`<textarea id="cvEditValue">${String(currentValue).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>`:`<input id="cvEditValue" type="${inputType}" ${field==='odometer'?'min="0" step="0.1"':''} value="${String(currentValue).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">`}
+      </div>
+      <div class="cv-edit-actions"><button type="button" class="cv-back">← Back</button><button type="button" class="cv-btn-cancel">Cancel</button><button type="button" class="cv-btn-save">Save Changes</button></div>`;
+    modal.querySelector('.cv-edit-close').onclick=close;
+    modal.querySelector('.cv-btn-cancel').onclick=close;
+    modal.querySelector('.cv-back').onclick=()=>editDeparture(id).then(close);
+    const input=modal.querySelector('#cvEditValue');
+    setTimeout(()=>{input.focus();if(input.select)input.select();},0);
+    modal.querySelector('.cv-btn-save').onclick=async()=>{
+      const raw=input.value;
+      const value=raw.trim();
+      if(['date','departureTime','route','vehicle'].includes(field)&&!value){alert(meta[2]+' is required.');return;}
+      if(field==='odometer' && (value==='' || Number(value)<0 || Number.isNaN(Number(value)))){alert('Please enter a valid odometer reading.');return;}
+      x[field]=field==='odometer'?Number(value):value;
+      x.updatedAt=now();
+      await save();
+      log('Update','Daily Departure',id);
+      close();
+      if(roleAdmin()) departures(document.getElementById('content')); else myRecords(document.getElementById('content'));
+    };
+  });
+}
+async function deleteDeparture(id){const rec=db.departures.find(x=>x.id===id);if(!rec||(!roleAdmin()&&rec.staffId!==current.id)||rec.isDeleted){alert('You can only manage your own records.');return;}if(!confirm('Are you sure you want to delete this departure record?'))return;rec.isDeleted=true;rec.deletedAt=now();rec.deletedBy=current?.username||'';await save();log('Soft Delete','Daily Departure',id);departures(document.getElementById('content'))}
+
+function visits(c){
+ if(!roleAdmin()){ go('myRecords'); return; }
+ c.innerHTML=`<div class="page-title"><h2>Customer Records</h2><div class="actions" style="margin:0"><button class="btn btn-primary" onclick="go('visitNew')">+ Add Customer Record</button><button class="btn btn-secondary" onclick="exportCSV('visits')">Export CSV</button></div></div>
+ <div class="card"><div class="toolbar"><input id="vfAccount" class="wide" placeholder="Account Number"><input id="vfDate" type="date"><input id="vfPhone" placeholder="Phone Number"><input id="vfStaff" placeholder="Staff"><input id="vfKeyword" class="wide" placeholder="Keyword in description"><button class="btn btn-secondary" onclick="filterVisits()">Search</button><button class="btn btn-secondary" onclick="visits(document.getElementById('content'))">Clear</button></div><div id="visTable"></div></div>`;
+ window.filterVisits=()=>{let a=db.visits.filter(x=>(!vfAccount.value||x.account.toLowerCase().includes(vfAccount.value.toLowerCase()))&&(!vfDate.value||x.date===vfDate.value)&&(!vfPhone.value||x.phone.includes(vfPhone.value))&&(!vfStaff.value||x.staffName.toLowerCase().includes(vfStaff.value.toLowerCase()))&&(!vfKeyword.value||x.description.toLowerCase().includes(vfKeyword.value.toLowerCase()))).sort(sortVisitsDateTime);renderVisTable(a)};
+ renderVisTable([...db.visits.filter(x=>!x.isDeleted)].sort(sortVisitsDateTime));
+}
+function renderVisTable(a){
+  window.render_visits=()=>paginate('visits',a,r=>`<div class="table-wrap"><table class="table"><tr><th>Date</th><th>Time</th><th>Account Number</th><th>Customer Visit Due Date</th><th>Phone Number</th><th>Staff</th><th>Description</th><th>Action</th></tr>${r.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.time)}</td><td><b>${esc(x.account)}</b></td><td>${x.dueDate?fmtDate(x.dueDate):'<span class="muted">—</span>'}</td><td>${esc(x.phone)}</td><td>${esc(x.staffName)}</td><td class="desc">${esc(x.description)}</td><td><button class="btn btn-edit btn-small" onclick="editVisit('${x.id}')">Edit</button> <button class="btn btn-danger btn-small" onclick="deleteVisit('${x.id}')">Delete</button></td></tr>`).join('')}</table></div>`,'visTable','No customer records found.');
+  render_visits();
+}
+async function editVisit(id){
+  const x=db.visits.find(v=>v.id===id);
+  if(!x || (!roleAdmin() && x.staffId!==current.id)){alert('You can only manage your own records.');return;}
+  if(!x)return;
+
+  const fields=[
+    ['date','📅','Date',x.date||''],
+    ['time','🕐','Time',x.time||''],
+    ['account','🔢','Account Number',x.account||''],
+    ['status','📝','Visit Outcome / Description',x.status||''],
+    ['dueDate','📆','Customer Visit Due Date',x.dueDate||''],
+    ['phone','📞','Phone Number',x.phone||''],
+    ['description','💬','Description',x.description||'']
+  ];
+
+  const overlay=document.createElement('div');
+  overlay.className='cv-edit-overlay';
+  overlay.innerHTML=`
+    <div class="cv-edit-modal" role="dialog" aria-modal="true">
+      <div class="cv-edit-head">
+        <div class="cv-edit-head-icon">✏️</div>
+        <div><h3>Edit Customer Visit</h3><p>Select only the field you want to change</p></div>
+        <button class="cv-edit-close" type="button">×</button>
+      </div>
+      <div class="cv-edit-grid">
+        ${fields.map(f=>`<button type="button" class="cv-edit-field" data-field="${f[0]}"><div class="ico">${f[1]}</div><strong>${f[2]}</strong><span>${String(f[3]).replace(/</g,'&lt;').replace(/>/g,'&gt;')||'Not set'}</span></button>`).join('')}
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+
+  const close=()=>overlay.remove();
+  overlay.querySelector('.cv-edit-close').onclick=close;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+
+  overlay.querySelectorAll('.cv-edit-field').forEach(btn=>btn.onclick=()=>{
+    const field=btn.dataset.field;
+    const meta=fields.find(f=>f[0]===field);
+    const modal=overlay.querySelector('.cv-edit-modal');
+    const inputType=field==='date'||field==='dueDate'?'date':field==='time'?'time':'text';
+    const isTextArea=field==='description';
+    const currentValue=x[field]||'';
+    modal.innerHTML=`
+      <div class="cv-edit-head">
+        <div class="cv-edit-head-icon">${meta[1]}</div>
+        <div><h3>Edit ${meta[2]}</h3><p>Only this field will be updated</p></div>
+        <button class="cv-edit-close" type="button">×</button>
+      </div>
+      <div class="cv-input-wrap">
+        <label>${meta[2]}</label>
+        ${isTextArea?`<textarea id="cvEditValue">${String(currentValue).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</textarea>`:`<input id="cvEditValue" type="${inputType}" value="${String(currentValue).replace(/&/g,'&amp;').replace(/"/g,'&quot;')}">`}
+      </div>
+      <div class="cv-edit-actions"><button type="button" class="cv-back">← Back</button><button type="button" class="cv-btn-cancel">Cancel</button><button type="button" class="cv-btn-save">Save Changes</button></div>`;
+    modal.querySelector('.cv-edit-close').onclick=close;
+    modal.querySelector('.cv-btn-cancel').onclick=close;
+    modal.querySelector('.cv-back').onclick=()=>editVisit(id).then(close);
+    const input=modal.querySelector('#cvEditValue');
+    setTimeout(()=>{input.focus();if(input.select)input.select();},0);
+    modal.querySelector('.cv-btn-save').onclick=async()=>{
+      const value=input.value.trim();
+      if((field==='date'||field==='time'||field==='account'||field==='status')&&!value){alert(meta[2]+' is required.');return;}
+      if(field==='dueDate'&&value&&value<x.date){alert('Customer Visit Due Date cannot be before the visit date.');return;}
+      if(field==='status') { x.status=value; x.description=value; }
+      else x[field]=value;
+      x.updatedAt=now();
+      syncDueDateStatuses();
+      await save();
+      log('Update','Customer Visit',id);
+      close();
+      visits(document.getElementById('content'));
+    };
+  });
+}
+async function deleteVisit(id){const rec=db.visits.find(x=>x.id===id);if(!rec||(!roleAdmin()&&rec.staffId!==current.id)||rec.isDeleted){alert('You can only manage your own records.');return;}if(!confirm('Are you sure you want to delete this customer record?'))return;rec.isDeleted=true;rec.deletedAt=now();rec.deletedBy=current?.username||'';await save();log('Soft Delete','Customer Visit',id);visits(document.getElementById('content'))}
+
+function staff(c){
+  const a=db.users.filter(x=>x.role==='Staff');
+  c.innerHTML=`<div class="page-title"><h2>Staff Management</h2><button class="btn btn-primary" onclick="newStaff()">Add Staff</button></div><div class="card"><div id="staffTable"></div></div>`;
+  window.render_staff=()=>paginate('staff',a,r=>`<div class="table-wrap"><table class="table"><tr><th>Name</th><th>Username</th><th>Phone</th><th>Status</th><th>Created</th><th>Action</th></tr>${r.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.username)}</td><td>${esc(x.phone)}</td><td><span class="badge ${x.active?'badge-green':'badge-red'}">${x.active?'Active':'Inactive'}</span></td><td>${new Date(x.createdAt).toLocaleDateString('en-GB')}</td><td><button class="btn btn-secondary btn-small" onclick="toggleStaff('${x.id}')">${x.active?'Disable':'Enable'}</button> <button class="btn btn-secondary btn-small" onclick="resetStaff('${x.id}')">Reset Password</button> <button class="btn btn-danger btn-small" onclick="deleteStaff('${x.id}')">Delete</button></td></tr>`).join('')}</table></div>`,'staffTable','No staff members.');
+  render_staff();
+}
+async function newStaff(){
+ const name=prompt('Staff full name:');if(!name)return;const username=prompt('Username:');if(!username)return;if(db.users.some(x=>x.username===username)){alert('Username already exists.');return}const password=prompt('Initial password:');if(!password)return;
+ const x={id:uid(),name,username,password,passwordEnabled:true,role:'Staff',phone:prompt('Phone number (optional):')||'',active:true,createdAt:now()};db.users.push(x);await save();log('Create','Staff',x.id);staff(document.getElementById('content'));
+}
+async function toggleStaff(id){let x=db.users.find(u=>u.id===id);if(x){x.active=!x.active;await save();log(x.active?'Enable':'Disable','Staff',id);staff(document.getElementById('content'))}}
+async function deleteStaff(id){
+  const x=db.users.find(u=>u.id===id&&u.role==='Staff');
+  if(!x)return;
+  const currentPassword=prompt('Enter your current Admin password to delete '+x.name+':');
+  if(currentPassword===null)return;
+  const admin=db.users.find(u=>u.role==='Admin');
+  if(!admin||!(await verifyCurrentPassword(currentPassword))){alert('Current Admin password is incorrect. Staff was not deleted.');return}
+  if(!confirm('Delete staff member "'+x.name+'"? The login account will be removed, but existing customer and departure records will be kept.'))return;
+  db.users=db.users.filter(u=>u.id!==id);
+  await save();log('Delete','Staff',id);staff(document.getElementById('content'));
+}
+async function resetStaff(id){
+  let x=db.users.find(u=>u.id===id);
+  if(!x)return;
+
+  const currentPassword=prompt('Enter your current Admin password:');
+  if(currentPassword===null)return;
+
+  const admin=db.users.find(u=>u.role==='Admin');
+  if(!admin||!(await verifyCurrentPassword(currentPassword))){
+    alert('Current Admin password is incorrect. Password was not changed.');
+    return;
+  }
+
+  const p=prompt('Enter new password for '+x.name+':');
+  if(p===null||p==='')return;
+
+  const p2=prompt('Confirm new password:');
+  if(p2===null)return;
+
+  if(p!==p2){
+    alert('New passwords do not match. Password was not changed.');
+    return;
+  }
+
+  if(p.length<6){
+    alert('New password must be at least 6 characters.');
+    return;
+  }
+
+  x.password=p;
+  await save();
+  log('Reset Password','Staff',id);
+  alert('Staff password updated successfully.');
+}
+
+
+
+function adminAccount(c){
+  const a=db.users.find(x=>x.role==='Admin');
+  if(!a){c.innerHTML='<div class="notice error">Admin account not found.</div>';return}
+  c.innerHTML=`<div class="page-title"><h2>Admin Account</h2></div>
+  <div class="card form-card">
+    <div id="adminMsg"></div>
+    <label>Admin Name</label>
+    <input id="adminName" value="${esc(a.name)}" placeholder="Admin name">
+    <label>Username *</label>
+    <input id="adminUsername" value="${esc(a.username)}" autocomplete="username" placeholder="Admin username">
+
+    <label>Current Password *</label>
+    <input id="adminCurrentPassword" type="password" autocomplete="current-password" placeholder="Enter current password">
+
+    <label>New Password *</label>
+    <input id="adminPassword" type="password" autocomplete="new-password" placeholder="Enter new password">
+    <label>Confirm New Password *</label>
+    <input id="adminPassword2" type="password" autocomplete="new-password" placeholder="Re-enter new password">
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="saveAdminAccount()">Save Changes</button>
+      <button class="btn btn-secondary" onclick="go('dashboard')">Cancel</button>
+    </div>
+    <p class="small muted" style="margin-top:12px">Changing the username or password requires the current Admin password. Passwords are stored securely on the online server as hashes.</p>
+  </div>`;
+}
+
+async function saveAdminAccount(){
+  const a=db.users.find(x=>x.role==='Admin');
+  if(!a){adminMsg.innerHTML=msg('Admin account not found.','error');return}
+
+  const name=adminName.value.trim(), username=adminUsername.value.trim();
+  const currentPassword=adminCurrentPassword.value;
+  const p=adminPassword.value, p2=adminPassword2.value;
+
+  if(!name||!username||!currentPassword||!p||!p2){
+    adminMsg.innerHTML=msg('Please enter the current password and complete all new account fields.','error');
+    return;
+  }
+
+  if(!(await verifyCurrentPassword(currentPassword))){
+    adminMsg.innerHTML=msg('Current password is incorrect. No changes were made.','error');
+    adminCurrentPassword.value='';
+    return;
+  }
+
+  const duplicate=db.users.some(x=>x.id!==a.id&&x.username.toLowerCase()===username.toLowerCase());
+  if(duplicate){
+    adminMsg.innerHTML=msg('That username is already in use.','error');
+    return;
+  }
+
+  if(p!==p2){
+    adminMsg.innerHTML=msg('New passwords do not match.','error');
+    return;
+  }
+
+  if(p.length<6){
+    adminMsg.innerHTML=msg('New password must be at least 6 characters.','error');
+    return;
+  }
+
+  a.name=name;
+  a.username=username;
+  a.password=p;
+  current=a;
+
+  await save();
+  localStorage.setItem('ccs_session',a.id);
+  log('Update','Admin Account',a.id);
+  document.getElementById('userLabel').textContent=current.name+' ('+current.role+')';
+
+  adminMsg.innerHTML=msg('Admin account updated successfully.');
+  adminCurrentPassword.value='';
+  adminPassword.value='';
+  adminPassword2.value='';
+}
+
+
+function backupRestore(c){
+  c.innerHTML=`<div class="page-title"><h2>Backup & Restore</h2></div>
+  <div class="card form-card">
+    <div class="notice info">
+      <b>Important:</b> This device is the main database device. Create backups regularly and keep them on a USB drive, Google Drive, OneDrive, or another safe location.
+    </div>
+    <h3>Database Backup</h3>
+    <p class="muted">Download a complete copy of the current database. This includes users, departures, visits, and audit records.</p>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="downloadDatabaseBackup()">Download Backup</button>
+    </div>
+
+    <hr style="margin:22px 0">
+
+    <h3>Restore Database</h3>
+    <p class="muted">Select a previously downloaded JSON backup. <b>Restoring will replace the current database on this device.</b></p>
+    <input id="restoreFile" type="file" accept=".json,application/json">
+    <div class="actions">
+      <button class="btn btn-danger" onclick="restoreDatabaseBackup()">Restore Selected Backup</button>
+    </div>
+    <div id="backupMsg"></div>
+
+    <hr style="margin:22px 0">
+
+    <h3>Transfer to another device</h3>
+    <p class="muted">
+      Download a backup on the Admin device and copy the downloaded JSON file to the other device.
+      On that device, open <b>Backup & Restore</b> and use Restore. After staff work is completed,
+      download a new backup and bring it back to the Admin device.
+    </p>
+    <div class="notice warn">
+      <b>Do not restore two independently modified databases expecting them to merge.</b>
+      Restoring replaces the database. Use one device as the main database and transfer backups in a controlled order.
+    </div>
+  </div>`;
+}
+
+function downloadDatabaseBackup(){
+  try{
+    const data=JSON.stringify(db,null,2);
+    const blob=new Blob([data],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    const d=new Date();
+    const pad=n=>String(n).padStart(2,'0');
+    const filename='customer_database_backup_'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'_'+pad(d.getHours())+'-'+pad(d.getMinutes())+'-'+pad(d.getSeconds())+'.json';
+    a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+    if(typeof log==='function' && current){
+      log('Backup','Database',current.id);
+    }
+    document.getElementById('backupMsg').innerHTML=msg('Database backup downloaded successfully.');
+  }catch(e){
+    document.getElementById('backupMsg').innerHTML=msg('Backup failed: '+e.message,'error');
+  }
+}
+
+async function restoreDatabaseBackup(){
+  const input=document.getElementById('restoreFile');
+  const file=input&&input.files[0];
+  if(!file){
+    document.getElementById('backupMsg').innerHTML=msg('Please select a JSON backup file first.','error');
+    return;
+  }
+
+  const confirmRestore=confirm(
+    'WARNING: Restoring this backup will replace ALL current data on this device.\\n\\n'+
+    'It is strongly recommended to download a backup of the current database first.\\n\\nContinue?'
+  );
+  if(!confirmRestore)return;
+
+  try{
+    const text=await file.text();
+    const imported=JSON.parse(text);
+
+    if(!imported || typeof imported!=='object' ||
+       !Array.isArray(imported.users) ||
+       !Array.isArray(imported.departures) ||
+       !Array.isArray(imported.visits) ||
+       !Array.isArray(imported.audit)){
+      throw new Error('This is not a valid Customer Collection System database backup.');
+    }
+
+    const hasAdmin=imported.users.some(u=>u.role==='Admin' && u.username && u.password);
+    if(!hasAdmin){
+      throw new Error('Backup does not contain a valid Admin account.');
+    }
+
+    // Keep a safety backup before replacing current data.
+    downloadDatabaseBackup();
+
+    db={
+      users:imported.users,
+      departures:imported.departures,
+      visits:imported.visits,
+      audit:imported.audit
+    };
+
+    await save();
+
+    const restoredCurrent = db.users.find(u=>current && u.id===current.id && u.active);
+    if(restoredCurrent) current=restoredCurrent;
+    else current=null;
+
+    document.getElementById('backupMsg').innerHTML=msg(
+      'Database restored successfully. The system will reload.'
+    );
+    setTimeout(()=>location.reload(),900);
+  }catch(e){
+    document.getElementById('backupMsg').innerHTML=msg('Restore failed: '+e.message,'error');
+  }
+}
+
+
+function backupRestoreFinal(c){
+  c.innerHTML=`<div class="page-title"><h2>Backup & Restore</h2></div>
+  <div class="card form-card">
+    ${!roleAdmin()?`<div class="card" style="margin-bottom:18px;background:#f8fafc">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div><h3 style="margin:0 0 5px">Password at Login</h3><div class="small muted">Choose whether your existing Staff password must be entered when you log in. This does not change your password.</div></div>
+        <label style="display:flex;align-items:center;gap:9px;margin:0;font-weight:800;cursor:pointer"><input id="myStaffPasswordToggle" type="checkbox" ${current.passwordEnabled!==false?'checked':''} onchange="toggleMyStaffPasswordPreference(this.checked)" style="width:20px;height:20px;accent-color:#17324d"> Require Password</label>
+      </div>
+    </div>`:''}
+    <div class="notice info"><b>Recommended workflow:</b> Keep the Admin device as the Main Database. Staff devices can send backups back to the Admin device, where they can be merged.</div>
+
+    <h3>1. Download Backup</h3>
+    <p class="muted">Downloads a complete copy of the current database as a JSON file.</p>
+    <div class="actions"><button class="btn btn-primary" onclick="downloadDatabaseBackup()">Download Backup</button></div>
+
+    <hr style="margin:22px 0">
+
+    <h3>2. Merge Another Device's Backup</h3>
+    <p class="muted">Merge supports both full database backups and Staff-only backups. Staff backups are matched to the existing Staff account and only new customer/departure records are added. Existing records are not deleted.</p>
+    <input id="restoreFile" type="file" accept=".json,application/json">
+    <div class="actions">
+      <button class="btn btn-primary" onclick="mergeDatabaseBackup()">Merge Backup</button>
+      <button class="btn btn-danger" onclick="restoreDatabaseBackup()">Restore / Replace</button>
+    </div>
+    <div id="backupMsg"></div>
+
+    <div class="notice warn" style="margin-top:16px">
+      <b>Merge rule:</b> If the same record ID exists in both databases, the current Main/Admin database copy is kept.
+      Existing usernames are also kept to avoid duplicate login accounts.
+    </div>
+  </div>`;
+}
+
+async function downloadDatabaseBackup(){
+  try{
+    const result=await apiRequest('/api/admin/backup',{method:'GET'});
+    const blob=new Blob([JSON.stringify(result.data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob); const a=document.createElement('a');
+    const d=new Date(), pad=n=>String(n).padStart(2,'0');
+    a.download='customer_database_backup_'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'_'+pad(d.getHours())+'-'+pad(d.getMinutes())+'-'+pad(d.getSeconds())+'.json';
+    a.href=url;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const m=document.getElementById('backupMsg');if(m)m.innerHTML=msg('Complete online database backup downloaded. Keep this file private because it contains password hashes.');
+  }catch(e){const m=document.getElementById('backupMsg');if(m)m.innerHTML=msg('Backup failed: '+e.message,'error');}
+}
+
+async function mergeDatabaseBackup(){
+  const input=document.getElementById('restoreFile'), file=input&&input.files[0];
+  const out=document.getElementById('backupMsg');
+  if(!file){if(out)out.innerHTML=msg('Please select a backup JSON file.','error');return}
+  if(!confirm('Merge this backup into the current database? Existing records will not be deleted.'))return;
+
+  try{
+    const imported=JSON.parse(await file.text());
+    const isStaffBackup = imported && imported.backupType==='staff-records' && Array.isArray(imported.visits) && Array.isArray(imported.departures);
+    const isFullBackup = imported && Array.isArray(imported.users) && Array.isArray(imported.departures) && Array.isArray(imported.visits) && Array.isArray(imported.audit);
+    if(!isStaffBackup && !isFullBackup)throw new Error('Invalid Customer Collection System backup file.');
+
+    downloadDatabaseBackup();
+    const stats={users:0,departures:0,visits:0,audit:0,updated:0,deleted:0,skipped:0};
+    const timeOf=x=>{const t=x&&x.updatedAt||x&&x.createdAt||''; const n=Date.parse(t); return Number.isFinite(n)?n:0;};
+
+    function mergeRecords(target,incoming,key,validator){
+      const index=new Map(target.map((x,i)=>[x&&x.id,i]).filter(([id])=>id));
+      (Array.isArray(incoming)?incoming:[]).forEach(item=>{
+        if(!item||!item.id||(validator&&!validator(item))){stats.skipped++;return;}
+        if(index.has(item.id)){
+          stats.skipped++; return;
+        }
+        target.push(item); index.set(item.id,target.length-1); stats[key]++;
+      });
+    }
+
+    if(isStaffBackup){
+      const staffId=String(imported.staffId||'').trim();
+      if(!staffId)throw new Error('Staff backup does not contain a Staff ID.');
+      const staffUser=db.users.find(u=>u&&u.id===staffId&&u.role==='Staff');
+      if(!staffUser)throw new Error('This Staff account does not exist in the current Admin database.');
+      if(!Array.isArray(db.deletedRecords))db.deletedRecords=[];
+
+      // Apply Staff deletions first. This also prevents an older backup from re-adding deleted records.
+      const deleted=Array.isArray(imported.deletedRecords)?imported.deletedRecords:[];
+      const deletedIds={visit:new Set(),departure:new Set()};
+      deleted.forEach(d=>{
+        if(d&&d.id&&d.staffId===staffId&&(d.type==='visit'||d.type==='departure')){
+          deletedIds[d.type].add(d.id);
+          const arr=d.type==='visit'?db.visits:db.departures;
+          const before=arr.length;
+          if(d.type==='visit')db.visits=db.visits.filter(x=>!(x&&x.id===d.id&&x.staffId===staffId));
+          else db.departures=db.departures.filter(x=>!(x&&x.id===d.id&&x.staffId===staffId));
+          if(arr.length!==before)stats.deleted++;
+        }
+      });
+
+      function syncStaffRecords(target,incoming,key,type){
+        const index=new Map(target.map((x,i)=>[x&&x.id,i]).filter(([id])=>id));
+        (Array.isArray(incoming)?incoming:[]).forEach(item=>{
+          if(!item||!item.id||item.staffId!==staffId||deletedIds[type].has(item.id)){stats.skipped++;return;}
+          if(index.has(item.id)){
+            const i=index.get(item.id), existing=target[i];
+            if(timeOf(item)>timeOf(existing)){
+              target[i]=item; stats.updated++;
+            }else stats.skipped++;
+            return;
+          }
+          target.push(item); index.set(item.id,target.length-1); stats[key]++;
+        });
+      }
+
+      syncStaffRecords(db.visits,imported.visits,'visits','visit');
+      syncStaffRecords(db.departures,imported.departures,'departures','departure');
+
+      // Keep deletion history so an older Staff backup cannot restore a deleted record later.
+      deleted.forEach(d=>{
+        if(d&&d.id&&d.staffId===staffId&&(d.type==='visit'||d.type==='departure')){
+          const exists=db.deletedRecords.some(x=>x&&x.type===d.type&&x.id===d.id&&x.staffId===staffId);
+          if(!exists)db.deletedRecords.push(d);
+        }
+      });
+
+      db.audit.push({id:uid(),user:current?.username||'',action:'Merge Staff Backup',type:'Staff Records',recordId:staffId,timestamp:now(),staffName:imported.staffName||staffUser.name||'',sourceUsername:imported.username||staffUser.username||'',details:`Added ${stats.visits} visits, ${stats.departures} departures; updated ${stats.updated}; deleted ${stats.deleted}.`});
+      await save();
+      if(out)out.innerHTML=msg(`Staff backup merged successfully. Staff: ${staffUser.name}. Added: ${stats.visits} customer visits, ${stats.departures} departures. Updated: ${stats.updated}. Deleted: ${stats.deleted}. Skipped: ${stats.skipped}.`);
+      input.value=''; return;
+    }
+
+    const hasAdmin=imported.users.some(u=>u&&u.role==='Admin'&&u.username&&u.password);
+    if(!hasAdmin)throw new Error('Backup does not contain a valid Admin account.');
+    const userIds=new Set(db.users.map(u=>u&&u.id).filter(Boolean));
+    const usernames=new Set(db.users.map(u=>(u.username||'').toLowerCase()).filter(Boolean));
+    imported.users.forEach(u=>{if(!u||!u.id){stats.skipped++;return}const uname=(u.username||'').trim().toLowerCase();if(userIds.has(u.id)||(uname&&usernames.has(uname))){stats.skipped++;return}db.users.push(u);userIds.add(u.id);if(uname)usernames.add(uname);stats.users++;});
+    mergeRecords(db.departures,imported.departures,'departures');
+    mergeRecords(db.visits,imported.visits,'visits');
+    mergeRecords(db.audit,imported.audit,'audit');
+    if(Array.isArray(imported.deletedRecords)){if(!Array.isArray(db.deletedRecords))db.deletedRecords=[];imported.deletedRecords.forEach(d=>{if(d&&d.id&&!db.deletedRecords.some(x=>x&&x.type===d.type&&x.id===d.id&&x.staffId===d.staffId))db.deletedRecords.push(d);});}
+    await save();
+    if(current){const fresh=db.users.find(u=>u.id===current.id&&u.active);if(fresh)current=fresh;}
+    if(out)out.innerHTML=msg(`Merge completed. Added: ${stats.users} users, ${stats.departures} departures, ${stats.visits} visits, ${stats.audit} audit records. Skipped existing/conflicting records: ${stats.skipped}.`);
+    input.value='';
+  }catch(e){if(out)out.innerHTML=msg('Merge failed: '+e.message,'error');}
+}
+async function restoreDatabaseBackup(){
+  const input=document.getElementById('restoreFile'), file=input&&input.files[0];
+  if(!file){backupMsg.innerHTML=msg('Please select a JSON backup file.','error');return}
+  if(!confirm('WARNING: Restore will replace the current online database. Continue?'))return;
+  try{
+    const imported=JSON.parse(await file.text());
+    if(!imported||!Array.isArray(imported.users)||!Array.isArray(imported.departures)||!Array.isArray(imported.visits)||!Array.isArray(imported.audit))throw new Error('Invalid Customer Collection System backup file.');
+    await downloadDatabaseBackup();
+    await apiRequest('/api/admin/restore',{method:'POST',body:JSON.stringify({data:imported})});
+    backupMsg.innerHTML=msg('Online database restored successfully. Reloading…');
+    setTimeout(()=>location.reload(),900);
+  }catch(e){backupMsg.innerHTML=msg('Restore failed: '+e.message,'error');}
+}
+
+function openReportCard(id){const el=document.getElementById(id);if(el){el.classList.add('report-open');document.body.style.overflow='hidden';}} function closeReportCard(id){const el=document.getElementById(id);if(el){el.classList.remove('report-open');document.body.style.overflow='';}}
+function recycleBin(c){
+ if(!roleAdmin()){go('dashboard');return;}
+ const dep=db.departures.filter(x=>x&&x.isDeleted).sort((a,b)=>String(b.deletedAt||'').localeCompare(String(a.deletedAt||'')));
+ const vis=db.visits.filter(x=>x&&x.isDeleted).sort((a,b)=>String(b.deletedAt||'').localeCompare(String(a.deletedAt||'')));
+ c.innerHTML=`<div class="page-title"><h2>Recycle Bin</h2><span class="muted">Deleted records can be restored or permanently deleted.</span></div>
+ <div class="card"><div class="page-title"><h3>Deleted Customer Records</h3><span class="badge badge-red">${vis.length}</span></div><div class="table-wrap"><table class="table"><tr><th>Date</th><th>Account</th><th>Staff</th><th>Deleted At</th><th>Action</th></tr>${vis.length?vis.map(x=>`<tr><td>${fmtDate(x.date)}</td><td><b>${esc(x.account)}</b></td><td>${esc(x.staffName)}</td><td>${x.deletedAt?new Date(x.deletedAt).toLocaleString('en-GB'):'—'}</td><td><button class="btn btn-success btn-small" onclick="restoreRecord('visits','${x.id}')">Restore</button> <button class="btn btn-danger btn-small" onclick="permanentDeleteRecord('visits','${x.id}')">Permanently Delete</button></td></tr>`).join(''):'<tr><td colspan="5" class="empty">No deleted customer records.</td></tr>'}</table></div></div>
+ <div class="card" style="margin-top:15px"><div class="page-title"><h3>Deleted Departure Records</h3><span class="badge badge-red">${dep.length}</span></div><div class="table-wrap"><table class="table"><tr><th>Date</th><th>Staff</th><th>Route</th><th>Vehicle</th><th>Odometer</th><th>Deleted At</th><th>Action</th></tr>${dep.length?dep.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.staffName)}</td><td>${esc(x.route)}</td><td>${esc(x.vehicle)}</td><td>${x.odometer}</td><td>${x.deletedAt?new Date(x.deletedAt).toLocaleString('en-GB'):'—'}</td><td><button class="btn btn-success btn-small" onclick="restoreRecord('departures','${x.id}')">Restore</button> <button class="btn btn-danger btn-small" onclick="permanentDeleteRecord('departures','${x.id}')">Permanently Delete</button></td></tr>`).join(''):'<tr><td colspan="7" class="empty">No deleted departure records.</td></tr>'}</table></div></div>`;
+}
+async function restoreRecord(type,id){if(!roleAdmin())return;const arr=db[type];const rec=arr.find(x=>x&&x.id===id&&x.isDeleted);if(!rec)return;if(!confirm('Restore this record?'))return;rec.isDeleted=false;delete rec.deletedAt;delete rec.deletedBy;rec.updatedAt=now();await save();log('Restore',type==='visits'?'Customer Visit':'Daily Departure',id);recycleBin(document.getElementById('content'));}
+async function permanentDeleteRecord(type,id){if(!roleAdmin())return;const arr=db[type];const rec=arr.find(x=>x&&x.id===id&&x.isDeleted);if(!rec)return;if(!confirm('Permanently delete this record? This cannot be undone.'))return;db[type]=arr.filter(x=>x!==rec);await save();log('Permanent Delete',type==='visits'?'Customer Visit':'Daily Departure',id);recycleBin(document.getElementById('content'));}
+
+function reports(c){
+ c.innerHTML=`<div class="page-title"><h2>Reports</h2><span class="muted">Select a report to view</span></div>
+ <div id="reportMenu" class="report-selector">
+   <div class="card report-select-card" onclick="selectReport('date')">
+     <div class="report-select-icon">📅</div>
+     <h3>Customer Records by Date</h3>
+     <p>View all customer visit records for a selected date.</p>
+     <button class="btn btn-primary" onclick="event.stopPropagation();selectReport('date')">Open Report</button>
+   </div>
+   <div class="card report-select-card" onclick="selectReport('account')">
+     <div class="report-select-icon">🔎</div>
+     <h3>Account History</h3>
+     <p>View the complete customer visit history for an account.</p>
+     <button class="btn btn-primary" onclick="event.stopPropagation();selectReport('account')">Open Report</button>
+   </div>
+   <div class="card report-select-card" onclick="selectReport('route')">
+     <div class="report-select-icon">🚗</div>
+     <h3>Route Report</h3>
+     <p>View vehicle routes and total kilometres from departure records.</p>
+     <button class="btn btn-primary" onclick="event.stopPropagation();selectReport('route')">Open Report</button>
+   </div>
+ </div>
+ <div id="reportDateCard" class="card report-card report-panel hidden">
+   <div class="report-panel-head"><button class="btn btn-secondary" onclick="backToReports()">← Back to Reports</button><h3>Customer Records by Date</h3></div>
+   <label>Date</label><input id="rDate" type="date" value="${today()}">
+   <div class="actions"><button class="btn btn-primary" onclick="reportDate()">View Report</button><button class="btn btn-secondary" onclick="printReport('reportOut','Customer Records by Date')">Print / PDF</button><button class="btn btn-success" onclick="downloadReportPDF('reportOut','Customer Records by Date')">Download PDF</button></div>
+   <div id="reportOut"></div>
+ </div>
+ <div id="reportAccountCard" class="card report-card report-panel hidden">
+   <div class="report-panel-head"><button class="btn btn-secondary" onclick="backToReports()">← Back to Reports</button><h3>Account History</h3></div>
+   <label>Account Number</label><input id="rAccount" placeholder="ACC-10025">
+   <div class="actions"><button class="btn btn-primary" onclick="reportAccount()">View History</button><button class="btn btn-secondary" onclick="printReport('reportAccountOut','Account History')">Print / PDF</button><button class="btn btn-success" onclick="downloadReportPDF('reportAccountOut','Account History')">Download PDF</button></div>
+   <div id="reportAccountOut"></div>
+ </div>
+ <div id="reportRouteCard" class="card report-card report-panel hidden">
+   <div class="report-panel-head"><button class="btn btn-secondary" onclick="backToReports()">← Back to Reports</button><h3>Route Report</h3></div>
+   <div class="form-grid">
+     <div><label>Vehicle</label><input id="rVehicle" placeholder="All vehicles / Vehicle Number"></div>
+     <div><label>From Date</label><input id="rRouteFrom" type="date"></div>
+     <div><label>To Date</label><input id="rRouteTo" type="date"></div>
+   </div>
+   <div class="actions"><button class="btn btn-primary" onclick="reportRoute()">View Route Report</button><button class="btn btn-secondary" onclick="printReport('reportRouteOut','Route Report')">Print / PDF</button><button class="btn btn-success" onclick="downloadReportPDF('reportRouteOut','Route Report')">Download PDF</button></div>
+   <div id="reportRouteOut"></div>
+ </div>`;
+ window.selectReport=(type)=>{
+   document.getElementById('reportMenu').classList.add('hidden');
+   document.getElementById('reportDateCard').classList.toggle('hidden',type!=='date');
+   document.getElementById('reportAccountCard').classList.toggle('hidden',type!=='account');
+   document.getElementById('reportRouteCard').classList.toggle('hidden',type!=='route');
+   window.scrollTo(0,0);
+ };
+ window.backToReports=()=>{
+   document.getElementById('reportDateCard').classList.add('hidden');
+   document.getElementById('reportAccountCard').classList.add('hidden');
+   document.getElementById('reportRouteCard').classList.add('hidden');
+   document.getElementById('reportMenu').classList.remove('hidden');
+   window.scrollTo(0,0);
+ };
+ const reportTable=(rows,container,key)=>{
+   window['render_'+key]=()=>paginate(key,rows,r=>`<div class="table-wrap report-scroll"><table class="table report-table"><thead><tr><th>Date</th><th>Time</th><th>Due Date</th><th>Account</th><th>Phone</th><th>Staff</th><th>Description</th></tr></thead><tbody>${r.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.time)}</td><td>${x.dueDate?fmtDate(x.dueDate):'—'}</td><td><b>${esc(x.account)}</b></td><td>${esc(x.phone)}</td><td>${esc(x.staffName)}</td><td class="desc">${esc(x.description)}</td></tr>`).join('')}</tbody></table></div>`,container);
+   window['render_'+key]();
+ };
+ window.reportDate=()=>{
+   const a=db.visits.filter(x=>x.date===rDate.value).sort(sortVisitsDateTime);
+   resetPage('reportDate');
+   reportOut.innerHTML=a.length?`<div class="notice info">${a.length} customer record(s) on ${fmtDate(rDate.value)}.</div><div id="reportDateTable"></div>`:`<div class="empty">No customer records found for ${fmtDate(rDate.value)}.</div>`;
+   if(a.length) reportTable(a,'reportDateTable','reportDate');
+ };
+ window.reportAccount=()=>{
+   const q=rAccount.value.trim().toLowerCase();
+   if(!q){reportAccountOut.innerHTML='<div class="notice error">Please enter an Account Number.</div>';return}
+   const a=db.visits.filter(x=>String(x.account||'').toLowerCase()===q).sort(sortVisitsDateTime);
+   resetPage('reportAccount');
+   reportAccountOut.innerHTML=a.length?`<div class="notice info">${a.length} record(s) found for Account Number <b>${esc(rAccount.value.trim())}</b>.</div><div id="reportAccountTable"></div>`:'<div class="empty">No records found.</div>';
+   if(a.length) reportTable(a,'reportAccountTable','reportAccount');
+ };
+ window.reportRoute=()=>{
+   const vehicle=(rVehicle.value||'').trim().toLowerCase(),from=rRouteFrom.value||'',to=rRouteTo.value||'';
+   let a=db.departures.filter(x=>(!vehicle||String(x.vehicle||'').toLowerCase().includes(vehicle))&&(!from||x.date>=from)&&(!to||x.date<=to));
+   a.sort((x,y)=>((x.vehicle||'')+'|'+x.date+'|'+x.departureTime).localeCompare((y.vehicle||'')+'|'+y.date+'|'+y.departureTime));
+   const prev={}; let total=0;
+   const rows=a.map(x=>{const key=String(x.vehicle||'').trim().toLowerCase();const odo=Number(x.odometer)||0;const p=prev[key];const km=p==null?0:Math.max(0,odo-p);prev[key]=odo;total+=km;return {x,km};});
+   const groups={};rows.forEach(r=>{const k=r.x.vehicle||'Unknown';(groups[k]||(groups[k]=[])).push(r);});
+   const summary=Object.entries(groups).map(([v,rs])=>{const km=rs.reduce((n,r)=>n+r.km,0),start=Number(rs[0].x.odometer)||0,end=Number(rs[rs.length-1].x.odometer)||0;return `<tr><td><b>${esc(v)}</b></td><td>${rs.length}</td><td>${start}</td><td>${end}</td><td><b>${km.toFixed(1)}</b></td></tr>`}).join('');
+   const detail=rows.map(r=>`<tr><td>${fmtDate(r.x.date)}</td><td>${esc(r.x.departureTime)}</td><td>${esc(r.x.vehicle)}</td><td>${esc(r.x.route)}</td><td>${r.x.odometer}</td><td>${r.km.toFixed(1)}</td><td>${esc(r.x.staffName)}</td></tr>`).join('');
+   reportRouteOut.innerHTML=a.length?`<div class="notice info">${a.length} departure(s) found. Total calculated distance: <b>${total.toFixed(1)} km</b>. Distance is calculated from consecutive odometer readings for each vehicle.</div><div class="table-wrap"><table class="table report-table"><tr><th>Vehicle</th><th>Departures</th><th>First Odometer</th><th>Latest Odometer</th><th>Total KM</th></tr>${summary}</table></div><div class="table-wrap" style="margin-top:15px"><table class="table report-table"><tr><th>Date</th><th>Time</th><th>Vehicle</th><th>Route</th><th>Odometer</th><th>KM Since Previous</th><th>Staff</th></tr>${detail}</table></div>`:`<div class="empty">No departure records found for the selected filters.</div>`;
+ };
+}
+function printReport(elementId,title){
+ const el=document.getElementById(elementId);
+ if(!el||!el.innerHTML||el.innerText.trim()===''){alert('Please view the report first.');return}
+ const w=window.open('','_blank','width=1100,height=800');
+ if(!w){alert('Please allow pop-ups for this system to print reports.');return}
+ w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(title)}</title><style>body{font-family:Arial,Helvetica,sans-serif;color:#172033;margin:28px;font-size:12px}h1{font-size:22px;margin:0 0 6px}h2{font-size:16px;margin:0 0 18px;color:#555}.meta{margin-bottom:18px;color:#666}.notice{padding:10px 12px;background:#eef5fa;border:1px solid #d5e5ef;border-radius:8px;margin-bottom:12px}.table-wrap{overflow:visible}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:8px;border:1px solid #d9dee5;text-align:left;vertical-align:top}.table th{background:#f3f5f7;font-weight:700}.desc{white-space:pre-wrap;max-width:420px}.empty{padding:20px;text-align:center;color:#777}@page{size:A4 landscape;margin:12mm}@media print{body{margin:0}}}</style></head><body><h1>Customer Collection System</h1><h2>${esc(title)}</h2><div class="meta">Generated: ${esc(new Date().toLocaleString())}</div>${el.innerHTML}</body></html>`);
+ w.document.close();
+ w.focus();
+ setTimeout(()=>w.print(),300);
+}
+async function downloadReportPDF(elementId,title){
+ const el=document.getElementById(elementId);
+ if(!el||!el.innerHTML||el.innerText.trim()===''){alert('Please view the report first.');return}
+ try{
+   if(typeof window.jspdf==='undefined' || !window.jspdf.jsPDF){
+     alert('PDF library is not available. Please check your internet connection and try again.');return;
+   }
+   const {jsPDF}=window.jspdf;
+   const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+   const margin=10;
+   const pageWidth=297;
+   doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text('Customer Collection System',margin,14);
+   doc.setFontSize(12);doc.setFont('helvetica','normal');doc.text(title,margin,21);
+   doc.setFontSize(8);doc.setTextColor(100);doc.text('Generated: '+new Date().toLocaleString(),margin,27);doc.setTextColor(0);
+   const table=el.querySelector('table');
+   if(table){
+     const head=[...table.querySelectorAll('tr:first-child th')].map(x=>x.innerText.trim());
+     const body=[...table.querySelectorAll('tr')].slice(1).map(tr=>[...tr.querySelectorAll('td')].map(td=>td.innerText.trim()));
+     if(typeof doc.autoTable!=='function'){alert('PDF table support is not available. Please use Print / PDF instead.');return}
+     doc.autoTable({head:[head],body:body,startY:32,margin:{left:margin,right:margin},styles:{font:'helvetica',fontSize:7,cellPadding:2,overflow:'linebreak'},headStyles:{fontStyle:'bold'},theme:'grid'});
+   }else{
+     const text=el.innerText.trim();
+     doc.setFontSize(10);doc.text(doc.splitTextToSize(text,pageWidth-margin*2),margin,35);
+   }
+   const safe=String(title).replace(/[^a-z0-9]+/gi,'_').replace(/^_|_$/g,'');
+   doc.save(safe+'_'+today()+'.pdf');
+ }catch(e){alert('PDF download failed: '+e.message)}
+}
+function audit(c){
+  const a=db.audit.slice().reverse();
+  c.innerHTML=`<div class="page-title"><h2>Audit Log</h2></div><div class="card"><div id="auditTable"></div></div>`;
+  window.render_audit=()=>paginate('audit',a,r=>`<div class="table-wrap"><table class="table"><tr><th>Time</th><th>User</th><th>Action</th><th>Type</th><th>Record ID</th></tr>${r.map(x=>`<tr><td>${new Date(x.timestamp).toLocaleString()}</td><td>${esc(x.user)}</td><td>${esc(x.action)}</td><td>${esc(x.type)}</td><td>${esc(x.recordId)}</td></tr>`).join('')}</table></div>`,'auditTable','No audit records.');
+  render_audit();
+}
+function myRecords(c){
+  const dep=db.departures.filter(x=>x.staffId===current.id).sort((a,b)=>b.createdAt.localeCompare(a.createdAt));
+  const vis=db.visits.filter(x=>x.staffId===current.id).sort(sortVisitsDateTime);
+  c.innerHTML=`<div class="page-title"><h2>My Records</h2></div>
+  <div class="card"><h3>My Customer Records</h3><div id="myVisitsTable"></div></div>
+  <div class="card" style="margin-top:15px"><h3>My Departure Records</h3><div id="myDeparturesTable"></div></div>`;
+  window.render_myVisits=()=>paginate('myVisits',vis,r=>`<div class="table-wrap"><table class="table"><tr><th>Date</th><th>Time</th><th>Account Number</th><th>Customer Visit Due Date</th><th>Phone Number</th><th>Description</th><th>Action</th></tr>${r.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.time)}</td><td>${esc(x.account)}</td><td>${x.dueDate?fmtDate(x.dueDate):'<span class="muted">—</span>'}</td><td>${esc(x.phone)}</td><td class="desc">${esc(x.description)}</td><td><button class="btn btn-edit btn-small" onclick="editVisit('${x.id}')">Edit</button></td></tr>`).join('')}</table></div>`,'myVisitsTable','No customer records.');
+  window.render_myDepartures=()=>paginate('myDepartures',dep,r=>`<div class="table-wrap"><table class="table"><tr><th>Date</th><th>Route</th><th>Time</th><th>Vehicle</th><th>Odometer</th><th>Action</th></tr>${r.map(x=>`<tr><td>${fmtDate(x.date)}</td><td>${esc(x.route)}</td><td>${esc(x.departureTime)}</td><td>${esc(x.vehicle)}</td><td>${x.odometer}</td><td><button class="btn btn-edit btn-small" onclick="editDeparture('${x.id}')">Edit</button></td></tr>`).join('')}</table></div>`,'myDeparturesTable','No departure records.');
+  render_myVisits();
+  render_myDepartures();
+}
+function staffBackup(c){
+  const myVisits=db.visits.filter(x=>x.staffId===current.id);
+  const myDepartures=db.departures.filter(x=>x.staffId===current.id);
+  c.innerHTML=`<div class="page-title"><h2>Backup & Restore</h2></div>
+  <div class="card form-card">
+    <div class="notice info"><b>Staff Backup:</b> This backup contains only your own customer visit and departure records. Admin accounts, other staff accounts, and their records are not included.</div>
+    <h3>Download My Backup</h3>
+    <p class="muted">Save your records to a JSON file and transfer it to the Admin device for merging.</p>
+    <p class="small muted">Current records: ${myVisits.length} customer visits, ${myDepartures.length} departures.</p>
+    <div class="actions"><button class="btn btn-primary" onclick="downloadStaffBackup()">Download My Backup</button></div>
+    <hr style="margin:22px 0">
+    <h3>Import / Merge My Backup</h3>
+    <p class="muted">Existing records are kept and duplicate IDs are skipped.</p>
+    <input id="staffRestoreFile" type="file" accept=".json,application/json">
+    <div class="actions"><button class="btn btn-primary" onclick="mergeStaffBackup()">Merge My Backup</button></div>
+    <div id="staffBackupMsg"></div>
+
+    <hr style="margin:22px 0">
+
+    <div class="card" style="margin:0;background:#f8fafc;border:1px solid #e2e8f0">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+        <div><h3 style="margin:0 0 5px">Password at Login</h3><div class="small muted">Choose whether your existing Staff password must be entered when you log in. This does not change your password.</div></div>
+        <label style="display:flex;align-items:center;gap:9px;margin:0;font-weight:800;cursor:pointer"><input id="myStaffPasswordToggle" type="checkbox" ${current.passwordEnabled!==false?'checked':''} onchange="toggleMyStaffPasswordPreference(this.checked)" style="width:20px;height:20px;accent-color:#17324d"> Require Password</label>
+      </div>
+    </div>
+
+    <div class="notice warn" style="margin-top:16px"><b>Important:</b> Staff backup cannot change Admin or other Staff accounts. It only transfers records belonging to the logged-in Staff account.</div>
+  </div>`;
+}
+
+function downloadStaffBackup(){
+  try{
+    const data={backupType:'staff-records',staffId:current.id,staffName:current.name,username:current.username,createdAt:now(),visits:db.visits.filter(x=>x.staffId===current.id),departures:db.departures.filter(x=>x.staffId===current.id),deletedRecords:db.deletedRecords.filter(x=>x&&x.staffId===current.id)};
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob),a=document.createElement('a'),d=new Date(),pad=n=>String(n).padStart(2,'0');
+    a.download='staff_backup_'+current.username+'_'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'_'+pad(d.getHours())+'-'+pad(d.getMinutes())+'-'+pad(d.getSeconds())+'.json';
+    a.href=url;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+    const m=document.getElementById('staffBackupMsg');if(m)m.innerHTML=msg('Your staff backup was downloaded successfully.');
+  }catch(e){const m=document.getElementById('staffBackupMsg');if(m)m.innerHTML=msg('Backup failed: '+e.message,'error');}
+}
+
+async function mergeStaffBackup(){
+  const input=document.getElementById('staffRestoreFile'),file=input&&input.files[0],out=document.getElementById('staffBackupMsg');
+  if(!file){out.innerHTML=msg('Please select a staff backup JSON file.','error');return}
+  if(!confirm('Merge this staff backup into your current records? Existing records will not be deleted.'))return;
+  try{
+    const imported=JSON.parse(await file.text());
+    if(!imported||imported.backupType!=='staff-records'||!Array.isArray(imported.visits)||!Array.isArray(imported.departures))throw new Error('Invalid staff backup file.');
+    if(imported.staffId!==current.id)throw new Error('This backup belongs to a different Staff account.');
+    const visitIds=new Set(db.visits.map(x=>x&&x.id).filter(Boolean)),depIds=new Set(db.departures.map(x=>x&&x.id).filter(Boolean));
+    let va=0,da=0,sk=0;
+    imported.visits.forEach(x=>{if(!x||!x.id||x.staffId!==current.id||visitIds.has(x.id)){sk++;return}db.visits.push(x);visitIds.add(x.id);va++;});
+    imported.departures.forEach(x=>{if(!x||!x.id||x.staffId!==current.id||depIds.has(x.id)){sk++;return}db.departures.push(x);depIds.add(x.id);da++;});
+    await save();log('Merge Staff Backup','Staff Records',current.id);
+    out.innerHTML=msg(`Merge completed. Added: ${va} customer visits, ${da} departures. Skipped: ${sk}.`);input.value='';
+  }catch(e){out.innerHTML=msg('Merge failed: '+e.message,'error');}
+}
+
+function exportCSV(type){
+ let rows,filename;
+ if(type==='visits'){rows=[['Date','Time','Due Date','Account Number','Phone Number','Staff','Description'],...db.visits.map(x=>[x.date,x.time,x.dueDate||'',x.status||'Other',x.account,x.phone,x.staffName,x.description])];filename='customer_records.csv'}
+ else{rows=[['Date','Staff','Route','Departure Time','Vehicle Number','Odometer','Starting Location','Notes'],...db.departures.map(x=>[x.date,x.staffName,x.route,x.departureTime,x.vehicle,x.odometer,x.startingLocation,x.notes])];filename='daily_departures.csv'}
+ const csv=rows.map(r=>r.map(v=>`"${String(v??'').replace(/"/g,'""')}"`).join(',')).join('\\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=filename;a.click();URL.revokeObjectURL(a.href);
+}
+startSystem();
+window.addEventListener('DOMContentLoaded',()=>{startSystem();});
+</script>
+</body>
+</html>

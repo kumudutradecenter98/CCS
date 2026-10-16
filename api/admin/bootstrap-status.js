@@ -1,0 +1,2 @@
+import { collection, getData, send } from '../../lib/server.js';
+export default async function handler(req,res){if(req.method!=='GET')return send(res,405,{error:'Method not allowed.'});try{const col=await collection();const d=await getData(col);return send(res,200,{needsImport:!(d.users||[]).some(u=>u.role==='Admin')});}catch(e){console.error(e);return send(res,500,{error:'Database unavailable. Check environment variables.'});}}

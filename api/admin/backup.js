@@ -1,0 +1,2 @@
+import { collection, getData, requireUser, send } from '../../lib/server.js';
+export default async function handler(req,res){if(req.method!=='GET')return send(res,405,{error:'Method not allowed.'});try{const user=await requireUser(req,res);if(!user)return;if(user.role!=='Admin')return send(res,403,{error:'Admin access required.'});const col=await collection();const data=await getData(col);return send(res,200,{data});}catch(e){console.error(e);return send(res,500,{error:'Could not create backup.'});}}

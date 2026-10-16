@@ -1,0 +1,2 @@
+import { collection, getData, readBody, requireUser, send, checkPassword } from '../../lib/server.js';
+export default async function handler(req,res){ if(req.method!=='POST')return send(res,405,{error:'Method not allowed.'}); try{const user=await requireUser(req,res);if(!user)return;const {password}=await readBody(req);return send(res,200,{valid:await checkPassword(password||'',user)});}catch(e){console.error(e);return send(res,500,{error:'Could not verify password.'});} }
