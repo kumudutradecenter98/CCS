@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 import bcrypt from 'bcryptjs';
 
 const input = process.argv[2] || './database.json';
-if (!process.env.MONGODB_URI) throw new Error('Set MONGODB_URI before importing.');
+if (!process.env.mongodb+srv://CCS:CCS123@ccs.vfz9jeq.mongodb.net/?appName=CCS) throw new Error('Set mongodb+srv://CCS:CCS123@ccs.vfz9jeq.mongodb.net/?appName=CCS before importing.');
 const parsed = JSON.parse(await fs.readFile(input, 'utf8'));
 for (const key of ['users','departures','visits','audit']) if (!Array.isArray(parsed[key])) parsed[key]=[];
 if (!Array.isArray(parsed.deletedRecords)) parsed.deletedRecords=[];
@@ -13,7 +13,7 @@ for (const u of parsed.users) {
   if (typeof u.password !== 'string' || !u.password) throw new Error(`User ${u.username||u.id} has no password to hash.`);
   u.passwordHash = await bcrypt.hash(u.password,12); delete u.password;
 }
-const client = new MongoClient(process.env.MONGODB_URI);
+const client = new MongoClient(process.env.mongodb+srv://CCS:CCS123@ccs.vfz9jeq.mongodb.net/?appName=CCS);
 try {
   await client.connect();
   const db=client.db(process.env.MONGODB_DB || 'customer_collection_system');
